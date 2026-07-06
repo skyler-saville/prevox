@@ -45,11 +45,25 @@ the same seed, the foundation works.
   vocabulary and semantics of both IRs.
 - [ROADMAP.md](ROADMAP.md) turns the vision into small, testable milestones.
 - [REFERENCES.md](REFERENCES.md) is the project's annotated research notebook.
+- [docs/adr/](docs/adr/) records accepted architectural decisions and their
+  consequences.
+
+## Run the architecture trace
+
+Prevox currently implements immutable core types and one completely manual
+eight-bar D Dorian trace. It deliberately contains no Composer, randomness,
+MIDI, or rendering yet.
+
+```bash
+poetry install
+poetry run python -m unittest discover -s tests -v
+poetry run python examples/manual_trace.py
+```
 
 ## Status
 
-Prevox is in phase 0: the semantics and lowering boundary between Intent IR and
-Music IR are being designed before implementation. The first coded phase will
-be an inspectable IR playground; MIDI follows it. Logic integration, a GUI,
-plugin hosting, AI integration, and Strudel integration are intentionally
-deferred.
+Prevox is in phase 0.5: the IR playground. The immutable domain model and manual
+Intent → Proposal → Critique → Acceptance → Music IR trace are implemented.
+The next milestone is one deterministic RandomWalkComposer; MIDI follows only
+after the Music IR survives that pressure test. Logic integration, a GUI,
+plugin hosting, AI integration, and Strudel integration remain deferred.

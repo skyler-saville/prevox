@@ -2,9 +2,9 @@
 
 > Last updated: 2026-07-06
 >
-> Project phase: 0 — language and boundaries
+> Project phase: 0.5 — IR playground
 >
-> Implementation status: no functional engine code exists
+> Implementation status: immutable core types and a manual trace are executable
 
 ## Purpose
 
@@ -84,22 +84,29 @@ As of 2026-07-06:
 | Area | Status |
 | --- | --- |
 | Philosophy and vision | Documented |
-| Architecture and grammar | Coherent but provisional until exercised |
+| Architecture and grammar | Documented; initial boundaries exercised |
 | Research notebook | Seeded and expected to grow |
-| Intent IR | Designed only |
-| Music IR | Designed only |
-| CompositionState | Designed only |
-| Composer/Proposal/Critic/Arbiter | Designed only |
+| Intent IR | Initial immutable `Intent` and targets implemented |
+| Music IR | Initial immutable hierarchy and relative-time view implemented |
+| CompositionState | Immutable acceptance transition implemented |
+| Proposal/Critique/AcceptanceDecision | Immutable records implemented |
+| Composer/Critic/Arbiter behavior | Not implemented |
 | Rendering and MIDI | Designed only |
-| Production Python code | None |
-| Automated tests | None beyond an empty package |
-| Executable examples | None |
+| Production Python code | Domain types, inspection, and manual example |
+| Automated tests | 14 standard-library unit tests |
+| Executable examples | Manual eight-bar D Dorian trace |
 | Golden fixtures | None |
-| ADRs | None |
+| ADRs | Four accepted records under `docs/adr/` |
 | Git repository | Initialized with `origin` set to `skyler-saville/prevox` |
 
-The Python project uses Poetry, targets Python 3.12 or newer, and currently has
-no dependencies. `src/prevox/__init__.py` and `tests/__init__.py` are empty.
+The Python project uses Poetry, targets Python 3.12 or newer, and has no runtime
+or test-library dependencies. Tests use `unittest`. Run:
+
+```bash
+poetry install
+poetry run python -m unittest discover -s tests -v
+poetry run python examples/manual_trace.py
+```
 
 ## Accepted architectural decisions
 
@@ -256,8 +263,8 @@ design.
 
 ## Historical corrections and regression guards
 
-There are no previous runtime bugs because no engine exists yet. The following
-design mistakes or documentation regressions were found and corrected:
+The following design mistakes or documentation regressions were found and
+corrected:
 
 | Earlier direction | Correction | Do not regress by |
 | --- | --- | --- |
@@ -273,42 +280,70 @@ design mistakes or documentation regressions were found and corrected:
 When a future implementation contradicts one of these guards, either fix the
 implementation or record an explicit superseding decision.
 
+## Resolved implementation issues
+
+### 2026-07-06 — Manual example could not import Prevox
+
+- Symptom: `poetry run python examples/manual_trace.py` raised
+  `ModuleNotFoundError: No module named 'prevox'`.
+- Root cause: Poetry had created a virtual environment but the local project
+  had not been installed into it.
+- Fix: run `poetry install`; document setup in README and this file.
+- Regression coverage: the standard run instructions execute the installed
+  package before the manual trace.
+- Related decision: executable examples are project documentation and must run
+  from a fresh clone.
+
+### 2026-07-06 — Console hierarchy used incorrect tree connectors
+
+- Symptom: repeated siblings were all printed with a final-child `└──`
+  connector.
+- Root cause: the first formatter emitted glyphs directly instead of rendering
+  a tree structure.
+- Fix: build inspection nodes first, then calculate sibling connectors during
+  rendering.
+- Regression coverage: `test_console_trace_exposes_the_complete_manual_pipeline`
+  exercises the formatter; exact golden output remains deferred.
+
 ## Immediate next milestone
 
-Stop expanding the architecture horizontally. Build Phase 0.5: the IR
-playground.
+Milestones 1 and 2 are complete: the immutable core model exists, and a manual
+Intent → Proposal → Critique → Acceptance → Music IR trace prints successfully.
 
-The first experiment is eight bars of monophonic melody in D Dorian:
+The next milestone is exactly one `RandomWalkComposer`:
 
 ```text
 Intent IR
     ↓
-one Composer
+RandomWalkComposer
     ↓
-at least two Proposals
+Proposal
     ↓
-one Validator and one Critic
-    ↓
-one deterministic Arbiter
+existing evaluation records
     ↓
 Music IR
-    ↓
-inspectable relative-time tree and decision log
 ```
 
-MIDI is deliberately not required for Phase 0.5. The next vertical slice adds
-performance lowering and MIDI output.
+Its entire scope is:
 
-Phase 0.5 succeeds when:
+- eight bars;
+- D Dorian;
+- one monophonic lead Voice;
+- injected, seeded randomness;
+- deterministic output;
+- no MIDI or rendering.
+
+The current manual slice has established that:
 
 - Intent IR makes musical sense without notes;
 - Music IR makes musical sense without MIDI;
 - every accepted event traces to intent and an actual decision;
-- changing one phrase intent does not perturb unrelated phrases;
 - Critic measurement can disagree with Composer prediction;
-- voice assignment can change without changing Music IR;
-- the implementation exposes awkward abstractions quickly and remains cheap to
-  replace.
+- exact local placements produce a derived song timeline;
+- Voice contains no instrument or MIDI assignment.
+
+The Composer milestone must establish that the state and proposal contracts stay
+usable once candidate music is produced algorithmically.
 
 ## Examples that should try to break the model
 
@@ -344,27 +379,25 @@ projections as well.
 
 ## Architecture Decision Records
 
-ADRs have been proposed but not created. Before or alongside Phase 0.5, record
-only decisions whose alternatives and consequences are now understood. Initial
-candidates are:
+Four accepted ADRs now record the decisions exercised by code:
 
 ```text
 docs/adr/
-├── 0001-intent-ir-and-music-ir.md
-├── 0002-immutable-composition-state.md
-├── 0003-relative-musical-time.md
-├── 0004-voice-not-track.md
-└── 0005-performance-projection.md
+├── 0001-separate-intent-and-music-ir.md
+├── 0002-relative-musical-time.md
+├── 0003-voice-not-track.md
+└── 0004-immutable-composition-state.md
 ```
 
-If the Performance IR question remains open, its ADR must be marked proposed
-rather than accepted.
+Performance IR remains open and has no ADR. If one is created before supporting
+evidence exists, it must be marked Proposed rather than Accepted.
 
 ## Known issues and risks
 
-- The architecture has not been exercised by code. Elegance on paper is not
-  evidence of usability.
-- The vocabulary is growing faster than executable examples.
+- Only a manual, hard-coded slice exercises the architecture. No algorithm has
+  yet tested the Composer boundary.
+- Proposal currently carries a complete candidate Music IR. This is simple and
+  correct for the first slice but may be too coarse for local regeneration.
 - `CompositionState`, context projections, and provenance could duplicate the
   same information if boundaries are not enforced.
 - Critics and arbitration could become an unnecessary agent framework. The

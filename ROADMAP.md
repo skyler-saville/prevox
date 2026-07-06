@@ -45,6 +45,10 @@ directory tree.
 **Outcome:** both representations can be read and challenged before MIDI hides
 their weaknesses.
 
+**Current progress (2026-07-06):** the immutable core types and one manual
+Intent → Proposal → Critique → Acceptance → Music IR trace are implemented.
+The next pressure test is one deterministic RandomWalkComposer.
+
 - build a minimal console or notebook inspector;
 - hand-construct an eight-bar Intent IR plan in D Dorian;
 - represent phrase roles, a reused motif, and a rising energy curve;
