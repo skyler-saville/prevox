@@ -1,0 +1,84 @@
+Intent: dorian-escalation
+├── Role: escalation
+├── Duration: 32 beats
+├── Target: energy=0.65
+├── Target: density=0.25
+└── Preserve: motif-a interval contour
+
+Proposal: proposal-001
+├── Intent: dorian-escalation
+├── Reason: Repeat motif A across eight bars to establish identity.
+├── Objective: remain monophonic
+├── Objective: stay within the D Dorian pitch collection
+└── Predicted: energy +0.20 (confidence 0.76)
+
+Critique: critique-001
+├── Critic: manual-intent-critic
+├── Verdict: support
+├── Confidence: 0.91
+├── Measured: energy_delta=0.12
+├── Evidence: The motif is preserved in every bar.
+├── Evidence: The voice remains monophonic.
+└── Reservation: The repeated rhythm increases less energy than predicted.
+
+Decision: accepted
+├── Policy: manual-baseline-v1
+├── Reason: The candidate satisfies the hard-coded intent closely enough.
+└── State revision: 1
+
+MusicIR v0.1
+└── Song: Manual Dorian Riff
+    ├── Tonal context: D Dorian
+    ├── Tempo: 120 BPM
+    ├── Duration: 32 beats
+    └── Section: verse @ +0
+        └── Voice: lead (lead)
+            └── Phrase: eight-bar-riff @ +0
+                ├── Motif: motif-a @ +0
+                │   ├── Duration: 4 beats
+                │   ├── Note: D4 @ +0 for 1
+                │   ├── Note: F4 @ +1 for 1
+                │   ├── Note: G4 @ +2 for 1
+                │   └── Note: A4 @ +3 for 1
+                ├── Motif: motif-a @ +4
+                │   ├── Duration: 4 beats
+                │   ├── Note: D4 @ +0 for 1
+                │   ├── Note: F4 @ +1 for 1
+                │   ├── Note: G4 @ +2 for 1
+                │   └── Note: A4 @ +3 for 1
+                ├── Motif: motif-a @ +8
+                │   ├── Duration: 4 beats
+                │   ├── Note: D4 @ +0 for 1
+                │   ├── Note: F4 @ +1 for 1
+                │   ├── Note: G4 @ +2 for 1
+                │   └── Note: A4 @ +3 for 1
+                ├── Motif: motif-a @ +12
+                │   ├── Duration: 4 beats
+                │   ├── Note: D4 @ +0 for 1
+                │   ├── Note: F4 @ +1 for 1
+                │   ├── Note: G4 @ +2 for 1
+                │   └── Note: A4 @ +3 for 1
+                ├── Motif: motif-a @ +16
+                │   ├── Duration: 4 beats
+                │   ├── Note: D4 @ +0 for 1
+                │   ├── Note: F4 @ +1 for 1
+                │   ├── Note: G4 @ +2 for 1
+                │   └── Note: A4 @ +3 for 1
+                ├── Motif: motif-a @ +20
+                │   ├── Duration: 4 beats
+                │   ├── Note: D4 @ +0 for 1
+                │   ├── Note: F4 @ +1 for 1
+                │   ├── Note: G4 @ +2 for 1
+                │   └── Note: A4 @ +3 for 1
+                ├── Motif: motif-a @ +24
+                │   ├── Duration: 4 beats
+                │   ├── Note: D4 @ +0 for 1
+                │   ├── Note: F4 @ +1 for 1
+                │   ├── Note: G4 @ +2 for 1
+                │   └── Note: A4 @ +3 for 1
+                └── Motif: motif-a @ +28
+                    ├── Duration: 4 beats
+                    ├── Note: D4 @ +0 for 1
+                    ├── Note: F4 @ +1 for 1
+                    ├── Note: G4 @ +2 for 1
+                    └── Note: A4 @ +3 for 1

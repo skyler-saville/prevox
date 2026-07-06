@@ -9,6 +9,8 @@ from prevox.domain import (
     CompositionState,
     Critique,
     Intent,
+    Motif,
+    MusicIR,
     Proposal,
 )
 
@@ -68,6 +70,11 @@ def _intent_node(intent: Intent) -> _Node:
     return _Node(f"Intent: {intent.identifier}", tuple(children))
 
 
+def format_intent(intent: Intent) -> str:
+    """Return the canonical human-readable Intent form."""
+    return _render_node(_intent_node(intent))
+
+
 def _proposal_node(proposal: Proposal) -> _Node:
     children = [
         _leaf(f"Intent: {proposal.intent_id}"),
@@ -85,6 +92,11 @@ def _proposal_node(proposal: Proposal) -> _Node:
         ),
     ]
     return _Node(f"Proposal: {proposal.identifier}", tuple(children))
+
+
+def format_proposal(proposal: Proposal) -> str:
+    """Return the canonical human-readable Proposal form."""
+    return _render_node(_proposal_node(proposal))
 
 
 def _critique_node(critique: Critique) -> _Node:
@@ -105,6 +117,11 @@ def _critique_node(critique: Critique) -> _Node:
     return _Node(f"Critique: {critique.identifier}", tuple(children))
 
 
+def format_critique(critique: Critique) -> str:
+    """Return the canonical human-readable Critique form."""
+    return _render_node(_critique_node(critique))
+
+
 def _decision_node(
     decision: AcceptanceDecision,
     state: CompositionState,
@@ -119,8 +136,36 @@ def _decision_node(
     )
 
 
-def _music_node(proposal: Proposal) -> _Node:
-    music = proposal.candidate
+def format_decision(
+    decision: AcceptanceDecision,
+    state: CompositionState,
+) -> str:
+    """Return the canonical human-readable acceptance form."""
+    return _render_node(_decision_node(decision, state))
+
+
+def _motif_node(motif: Motif, *, label: str | None = None) -> _Node:
+    return _Node(
+        label or f"Motif: {motif.identifier}",
+        (
+            _leaf(f"Duration: {_beat(motif.duration)} beats"),
+            *(
+                _leaf(
+                    f"Note: {note.pitch} @ +{_beat(note.offset)} "
+                    f"for {_beat(note.duration)}"
+                )
+                for note in motif.notes
+            ),
+        ),
+    )
+
+
+def format_motif(motif: Motif) -> str:
+    """Return the canonical human-readable Motif form."""
+    return _render_node(_motif_node(motif))
+
+
+def _music_node(music: MusicIR) -> _Node:
     song = music.song
     section_nodes = []
     for section_placement in song.sections:
@@ -133,18 +178,13 @@ def _music_node(proposal: Proposal) -> _Node:
                 motif_nodes = []
                 for motif_placement in phrase.motifs:
                     motif = motif_placement.item
-                    note_nodes = tuple(
-                        _leaf(
-                            f"Note: {note.pitch} @ +{_beat(note.offset)} "
-                            f"for {_beat(note.duration)}"
-                        )
-                        for note in motif.notes
-                    )
                     motif_nodes.append(
-                        _Node(
-                            f"Motif: {motif.identifier} "
-                            f"@ +{_beat(motif_placement.offset)}",
-                            note_nodes,
+                        _motif_node(
+                            motif,
+                            label=(
+                                f"Motif: {motif.identifier} "
+                                f"@ +{_beat(motif_placement.offset)}"
+                            ),
                         )
                     )
                 phrase_nodes.append(
@@ -184,6 +224,11 @@ def _music_node(proposal: Proposal) -> _Node:
     )
 
 
+def format_music_ir(music: MusicIR) -> str:
+    """Return the canonical human-readable Music IR form."""
+    return _render_node(_music_node(music))
+
+
 def format_trace(
     *,
     intent: Intent,
@@ -198,6 +243,6 @@ def format_trace(
         _proposal_node(proposal),
         *(_critique_node(critique) for critique in critiques),
         _decision_node(decision, state),
-        _music_node(proposal),
+        _music_node(proposal.candidate),
     )
     return "\n\n".join(_render_node(node) for node in nodes)

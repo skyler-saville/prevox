@@ -1,5 +1,7 @@
+from pathlib import Path
 import unittest
 
+from prevox.inspection import format_music_ir
 from prevox.manual_example import build_manual_trace
 
 
@@ -26,6 +28,23 @@ class ManualExampleTests(unittest.TestCase):
         self.assertIn("MusicIR v0.1", rendered)
         self.assertIn("Motif: motif-a @ +28", rendered)
         self.assertNotIn("MIDI", rendered)
+
+    def test_console_trace_matches_the_canonical_golden_file(self) -> None:
+        golden = (
+            Path(__file__).with_name("golden") / "manual_trace.txt"
+        ).read_text(encoding="utf-8")
+
+        self.assertEqual(build_manual_trace().format() + "\n", golden)
+
+    def test_music_ir_formatter_is_stable_and_standalone(self) -> None:
+        music = build_manual_trace().proposal.candidate
+
+        first = format_music_ir(music)
+        second = format_music_ir(music)
+
+        self.assertEqual(first, second)
+        self.assertTrue(first.startswith("MusicIR v0.1"))
+        self.assertIn("Voice: lead (lead)", first)
 
 
 if __name__ == "__main__":
