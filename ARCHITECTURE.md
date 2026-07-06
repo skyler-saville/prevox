@@ -288,6 +288,31 @@ lexicographic priorities, or Pareto comparison. Disagreement remains visible.
 The first slice needs only one or two Critics and one deterministic policy.
 There is no initial agent framework, voting network, or AI dependency.
 
+### Canonical inspection
+
+Core aggregate values have deterministic human-readable formatters independent
+of `repr()`. The manual pipeline trace is a version-controlled golden fixture.
+Formatting changes are reviewed like other observable behavior, while the
+format remains distinct from a future persistence or interchange schema.
+
+### Initial transformations
+
+The first middle-end passes operate on immutable Motifs and return new Motifs
+with explicit derived identifiers:
+
+```text
+reverse
+repeat
+scale_time
+augment
+diminish
+```
+
+These transformations use exact rational time and never mutate their input.
+Transpose, invert, and pitch mirroring are deferred until interval, tuning, and
+enharmonic-spelling semantics are explicit. They must not be implemented as
+hidden MIDI-number arithmetic.
+
 ### Infrastructure and interfaces
 
 Infrastructure implements ports for MIDI, persistence, and eventually external

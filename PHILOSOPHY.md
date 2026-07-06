@@ -98,6 +98,12 @@ musical semantics. MIDI, MusicXML, notation, and live streams are lossy or
 specialized projections. Backend limitations must be reported explicitly, not
 leaked backward into either model.
 
+Music IR is intended to be the project's most stable abstraction. Frontends,
+Composers, Critics, transformations, and Renderers should evolve around it.
+During `0.x`, stability means that an IR change requires executable evidence,
+an ADR, and updated canonical examples—not that early mistakes are preserved
+forever.
+
 A useful boundary test is: “Would this concept still exist if MIDI had never
 been invented?” If not, it almost certainly belongs in rendering. Passing that
 test is necessary, not sufficient; a concept still needs a demonstrated use in
@@ -142,6 +148,13 @@ An abstraction is provisional until a small musical example pressures it. The
 project should alternate semantic design with inspectable and audible vertical
 slices. A beautiful model that makes eight bars awkward is useful evidence, not
 an architecture to defend.
+
+### Observability is a product capability
+
+Intent, proposals, critiques, acceptance, transformations, and Music IR should
+have deterministic human-readable forms. These views support teaching, golden
+tests, bug reports, and musical reasoning. They are public explanations, not
+incidental object representations.
 
 ### The model is situated, not universal
 

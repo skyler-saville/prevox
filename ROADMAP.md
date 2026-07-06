@@ -47,7 +47,9 @@ their weaknesses.
 
 **Current progress (2026-07-06):** the immutable core types and one manual
 Intent → Proposal → Critique → Acceptance → Music IR trace are implemented.
-The next pressure test is one deterministic RandomWalkComposer.
+Canonical aggregate formatting, a golden trace, and the first temporal Motif
+transformations are also implemented. Pitch transformations remain deferred
+until interval and tuning semantics are explicit.
 
 - build a minimal console or notebook inspector;
 - hand-construct an eight-bar Intent IR plan in D Dorian;

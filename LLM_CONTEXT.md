@@ -4,7 +4,8 @@
 >
 > Project phase: 0.5 — IR playground
 >
-> Implementation status: immutable core types and a manual trace are executable
+> Implementation status: core types, canonical trace, and temporal transforms
+> are executable
 
 ## Purpose
 
@@ -91,12 +92,14 @@ As of 2026-07-06:
 | CompositionState | Immutable acceptance transition implemented |
 | Proposal/Critique/AcceptanceDecision | Immutable records implemented |
 | Composer/Critic/Arbiter behavior | Not implemented |
+| Motif transformations | Reverse, repeat, scale, augment, diminish |
+| Canonical inspection | Aggregate formatters and manual golden trace |
 | Rendering and MIDI | Designed only |
 | Production Python code | Domain types, inspection, and manual example |
-| Automated tests | 14 standard-library unit tests |
+| Automated tests | 24 standard-library unit tests |
 | Executable examples | Manual eight-bar D Dorian trace |
-| Golden fixtures | None |
-| ADRs | Four accepted records under `docs/adr/` |
+| Golden fixtures | Canonical manual trace |
+| ADRs | Five accepted records under `docs/adr/` |
 | Git repository | Initialized with `origin` set to `skyler-saville/prevox` |
 
 The Python project uses Poetry, targets Python 3.12 or newer, and has no runtime
@@ -201,6 +204,26 @@ belong in Music IR.
 Whether the performance projection should become a formal, reusable
 non-canonical Performance IR remains open.
 
+### Music IR changes are stability-sensitive
+
+Music IR is intended to be the project's most stable abstraction. During
+`0.x`, changes require executable evidence, an ADR, and updated canonical
+fixtures. This is a high bar, not a prohibition against correcting an early
+mistake.
+
+### Temporal transformations precede pitch transformations
+
+Reverse, repeat, exact time scaling, augmentation, and diminution operate on
+immutable Motifs and require explicit result identifiers. Transpose, invert,
+and mirror remain absent until interval, tuning, and enharmonic-spelling
+semantics are decided.
+
+### Canonical inspection is observable behavior
+
+Intent, Proposal, Critique, AcceptanceDecision, Motif, and Music IR aggregates
+have deterministic human-readable formatting. The complete manual trace is a
+golden test fixture. This format is not yet a persistence schema.
+
 ## Open decisions and active hypotheses
 
 These are not settled. Do not present them as accepted architecture.
@@ -261,6 +284,14 @@ No canonical project, Intent IR, Music IR, critique, or provenance file format
 has been chosen. Human-readable inspection output is needed before persistence
 design.
 
+### Pitch transformations
+
+Transpose, inversion, and pitch mirroring need a declared interval model,
+tuning system, and spelling policy. Do not implement them by converting Pitch
+to hidden MIDI numbers. Decide whether transformation semantics belong to a
+12-TET-specific policy or a more general pitch-space abstraction only after
+concrete musical examples are available.
+
 ## Historical corrections and regression guards
 
 The following design mistakes or documentation regressions were found and
@@ -307,33 +338,26 @@ implementation or record an explicit superseding decision.
 
 ## Immediate next milestone
 
-Milestones 1 and 2 are complete: the immutable core model exists, and a manual
-Intent → Proposal → Critique → Acceptance → Music IR trace prints successfully.
+Milestones 1 and 2 are complete. The first middle-end slice is also complete:
+temporal Motif transformations, canonical aggregate formatters, and one golden
+trace are tested.
 
-The next milestone is exactly one `RandomWalkComposer`:
+The next middle-end decision is the minimum pitch/interval model required for
+transpose and inversion. It must be tested against at least:
 
 ```text
-Intent IR
-    ↓
-RandomWalkComposer
-    ↓
-Proposal
-    ↓
-existing evaluation records
-    ↓
-Music IR
+D Dorian diatonic material
+chromatic semitone transposition
+enharmonic spelling
+one non-12-TET counterexample or explicit limitation
 ```
 
-Its entire scope is:
+Do not add a general tuning framework speculatively. If those cases cannot
+justify clean semantics, continue strengthening traversal and validation and
+leave pitch transformations deferred. The first `RandomWalkComposer` follows
+the deterministic middle-end work and still excludes MIDI.
 
-- eight bars;
-- D Dorian;
-- one monophonic lead Voice;
-- injected, seeded randomness;
-- deterministic output;
-- no MIDI or rendering.
-
-The current manual slice has established that:
+The implemented slices have established that:
 
 - Intent IR makes musical sense without notes;
 - Music IR makes musical sense without MIDI;
@@ -341,9 +365,9 @@ The current manual slice has established that:
 - Critic measurement can disagree with Composer prediction;
 - exact local placements produce a derived song timeline;
 - Voice contains no instrument or MIDI assignment.
-
-The Composer milestone must establish that the state and proposal contracts stay
-usable once candidate music is produced algorithmically.
+- transformations do not mutate source Motifs;
+- reverse twice restores musical material;
+- augment followed by diminish restores musical material.
 
 ## Examples that should try to break the model
 
@@ -379,14 +403,15 @@ projections as well.
 
 ## Architecture Decision Records
 
-Four accepted ADRs now record the decisions exercised by code:
+Five accepted ADRs now record the decisions exercised by code:
 
 ```text
 docs/adr/
 ├── 0001-separate-intent-and-music-ir.md
 ├── 0002-relative-musical-time.md
 ├── 0003-voice-not-track.md
-└── 0004-immutable-composition-state.md
+├── 0004-immutable-composition-state.md
+└── 0005-temporal-motif-transformations.md
 ```
 
 Performance IR remains open and has no ADR. If one is created before supporting
@@ -394,8 +419,8 @@ evidence exists, it must be marked Proposed rather than Accepted.
 
 ## Known issues and risks
 
-- Only a manual, hard-coded slice exercises the architecture. No algorithm has
-  yet tested the Composer boundary.
+- Only manual and deterministic transformation slices exercise the
+  architecture. No algorithm has yet tested the Composer boundary.
 - Proposal currently carries a complete candidate Music IR. This is simple and
   correct for the first slice but may be too coarse for local regeneration.
 - `CompositionState`, context projections, and provenance could duplicate the
@@ -405,6 +430,8 @@ evidence exists, it must be marked Proposed rather than Accepted.
 - Intent dimensions such as energy, tension, and novelty lack agreed
   measurement semantics.
 - Motif identity and preservation remain hypotheses.
+- Transformation provenance is not yet retained beyond explicit derived
+  identifiers.
 - Music IR currently leans toward Western pitch and metrical concepts despite
   broader aspirations.
 - MIDI import cannot recover authorial intent, motif identity, logical voices,
