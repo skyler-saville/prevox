@@ -115,6 +115,22 @@ poetry run python -m unittest discover -s tests -v
 poetry run python examples/manual_trace.py
 ```
 
+## Git workflow for future LLM sessions
+
+The project owner wants frequent, atomic commits and pushes.
+
+- Keep commits small and coherent: one architectural decision, one behavior
+  slice, one doc update, or one guardrail at a time.
+- Validate the relevant slice before committing; run the full suite before
+  pushing a branch update.
+- Push after each validated atomic commit or small batch of closely related
+  commits.
+- Do not leave completed work sitting unpushed unless the user explicitly asks
+  to pause before publishing.
+- Preserve unrelated user changes. If the working tree is mixed, stage only the
+  files that belong to the current slice.
+- Keep PR descriptions current when pushed commits materially change the scope.
+
 ## Accepted architectural decisions
 
 These decisions are current unless an experiment and subsequent documentation
