@@ -52,6 +52,8 @@ The test suite includes three kinds of protection:
 
 - unit tests for individual immutable values and pure functions;
 - golden tests for canonical human-readable output;
+- semantic tests for musical properties that should survive a transformation
+  or lowering;
 - architectural tests for layering and long-lived invariants.
 
 ## Examples and cookbooks
