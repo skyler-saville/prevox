@@ -65,7 +65,8 @@ poetry run python examples/manual_trace.py
 
 Prevox is in phase 0.5: the IR playground and deterministic middle-end. The
 immutable domain model, canonical manual trace, golden fixture, and first
-temporal Motif transformations are implemented. Pitch transformations await an
-explicit interval and tuning model. MIDI follows only after the Music IR
-survives these pressure tests. Logic integration, a GUI, plugin hosting, AI
-integration, and Strudel integration remain deferred.
+temporal Motif transformations are implemented. Music IR is versioned, and
+transform preflight checks can report structured diagnostics. Pitch
+transformations await an explicit interval and tuning model. MIDI follows only
+after the Music IR survives these pressure tests. Logic integration, a GUI,
+plugin hosting, AI integration, and Strudel integration remain deferred.

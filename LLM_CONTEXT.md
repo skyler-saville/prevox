@@ -80,7 +80,7 @@ until syntax is justified.
 
 ## Current repository state
 
-As of 2026-07-06:
+As of 2026-07-08:
 
 | Area | Status |
 | --- | --- |
@@ -88,18 +88,19 @@ As of 2026-07-06:
 | Architecture and grammar | Documented; initial boundaries exercised |
 | Research notebook | Seeded and expected to grow |
 | Intent IR | Initial immutable `Intent` and targets implemented |
-| Music IR | Initial immutable hierarchy and relative-time view implemented |
+| Music IR | Initial immutable hierarchy, relative-time view, and schema version implemented |
 | CompositionState | Immutable acceptance transition implemented |
 | Proposal/Critique/AcceptanceDecision | Immutable records implemented |
 | Composer/Critic/Arbiter behavior | Not implemented |
 | Motif transformations | Reverse, repeat, scale, augment, diminish |
+| Diagnostics | Immutable diagnostic values and transform preflight reports |
 | Canonical inspection | Aggregate formatters and manual golden trace |
 | Rendering and MIDI | Designed only |
 | Production Python code | Domain types, inspection, and manual example |
-| Automated tests | 24 standard-library unit tests |
+| Automated tests | Standard-library unit tests |
 | Executable examples | Manual eight-bar D Dorian trace |
 | Golden fixtures | Canonical manual trace |
-| ADRs | Five accepted records under `docs/adr/` |
+| ADRs | Six accepted records under `docs/adr/` |
 | Git repository | Initialized with `origin` set to `skyler-saville/prevox` |
 
 The Python project uses Poetry, targets Python 3.12 or newer, and has no runtime
@@ -223,6 +224,15 @@ semantics are decided.
 Intent, Proposal, Critique, AcceptanceDecision, Motif, and Music IR aggregates
 have deterministic human-readable formatting. The complete manual trace is a
 golden test fixture. This format is not yet a persistence schema.
+
+### Diagnostics are values
+
+User-facing compiler workflows should report invalid input with structured
+diagnostics instead of relying only on Python exception text. The first
+diagnostic model includes severity, code, message, domain location, expected
+values, notes, and immutable reports. Transform preflight helpers are the first
+consumer. Low-level constructors may still raise exceptions for programmer
+invariant violations.
 
 ## Open decisions and active hypotheses
 
@@ -403,7 +413,7 @@ projections as well.
 
 ## Architecture Decision Records
 
-Five accepted ADRs now record the decisions exercised by code:
+Six accepted ADRs now record the decisions exercised by code:
 
 ```text
 docs/adr/
@@ -411,7 +421,8 @@ docs/adr/
 ├── 0002-relative-musical-time.md
 ├── 0003-voice-not-track.md
 ├── 0004-immutable-composition-state.md
-└── 0005-temporal-motif-transformations.md
+├── 0005-temporal-motif-transformations.md
+└── 0006-diagnostics-as-values.md
 ```
 
 Performance IR remains open and has no ADR. If one is created before supporting

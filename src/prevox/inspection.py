@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from fractions import Fraction
 from typing import Iterable
 
+from prevox.diagnostics import Diagnostic, DiagnosticReport
 from prevox.domain import (
     AcceptanceDecision,
     CompositionState,
@@ -52,6 +53,36 @@ def _render_node(node: _Node) -> str:
 
     append_children(node, prefix="")
     return "\n".join(lines)
+
+
+def _diagnostic_node(diagnostic: Diagnostic) -> _Node:
+    children = []
+    if diagnostic.location is not None:
+        children.append(_leaf(f"Location: {diagnostic.location}"))
+    children.extend(
+        _leaf(f"Expected: {expected}") for expected in diagnostic.expected
+    )
+    children.extend(_leaf(f"Note: {note}") for note in diagnostic.notes)
+    return _Node(
+        f"{diagnostic.severity.value.upper()} {diagnostic.code}: "
+        f"{diagnostic.message}",
+        tuple(children),
+    )
+
+
+def format_diagnostic(diagnostic: Diagnostic) -> str:
+    """Return the canonical human-readable diagnostic form."""
+    return _render_node(_diagnostic_node(diagnostic))
+
+
+def format_diagnostic_report(report: DiagnosticReport) -> str:
+    """Return the canonical human-readable diagnostic report form."""
+    if not report.diagnostics:
+        return "Diagnostics: clean"
+    return "\n\n".join(
+        _render_node(_diagnostic_node(diagnostic))
+        for diagnostic in report.diagnostics
+    )
 
 
 def _intent_node(intent: Intent) -> _Node:

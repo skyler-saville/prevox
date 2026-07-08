@@ -45,11 +45,13 @@ directory tree.
 **Outcome:** both representations can be read and challenged before MIDI hides
 their weaknesses.
 
-**Current progress (2026-07-06):** the immutable core types and one manual
+**Current progress (2026-07-08):** the immutable core types and one manual
 Intent → Proposal → Critique → Acceptance → Music IR trace are implemented.
 Canonical aggregate formatting, a golden trace, and the first temporal Motif
-transformations are also implemented. Pitch transformations remain deferred
-until interval and tuning semantics are explicit.
+transformations are also implemented. Music IR is versioned, and transform
+preflight checks can now return compiler-style diagnostic reports. Pitch
+transformations remain deferred until interval and tuning semantics are
+explicit.
 
 - build a minimal console or notebook inspector;
 - hand-construct an eight-bar Intent IR plan in D Dorian;
@@ -57,6 +59,7 @@ until interval and tuning semantics are explicit.
 - realize the plan into Music IR with one deliberately simple melody composer;
 - print Intent IR, Music IR, and the lowering decisions between them;
 - print each proposal's rationale, independent critiques, and acceptance reason;
+- report invalid transform or validation input through diagnostics;
 - keep the implementation small enough to replace when the model is wrong.
 
 **Exit criteria**

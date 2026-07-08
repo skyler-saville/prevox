@@ -2,8 +2,13 @@ from fractions import Fraction
 import unittest
 
 from prevox.domain import Motif, Note, Pitch
-from prevox.inspection import format_motif
+from prevox.inspection import format_diagnostic_report, format_motif
 from prevox.transforms import augment, diminish, repeat, reverse, scale_time
+from prevox.transforms import (
+    diagnose_diminish,
+    diagnose_repeat,
+    diagnose_scale_time,
+)
 
 
 def motif_signature(
@@ -112,6 +117,52 @@ class MotifTransformationTests(unittest.TestCase):
             augment(source_motif(), identifier="not-augmented", factor=1)
         with self.assertRaisesRegex(ValueError, "positive integer"):
             repeat(source_motif(), 0, identifier="empty")
+
+    def test_transform_diagnostics_report_invalid_parameters(self) -> None:
+        report = diagnose_diminish(
+            source_motif(),
+            identifier="too-small",
+            divisor=0,
+        )
+
+        self.assertTrue(report.has_errors)
+        self.assertEqual(
+            report.errors[0].code,
+            "transform.invalid_diminution_divisor",
+        )
+
+        rendered = format_diagnostic_report(report)
+        self.assertIn(
+            "ERROR transform.invalid_diminution_divisor: "
+            "cannot diminish by 0",
+            rendered,
+        )
+        self.assertIn("Location: Motif 'source'", rendered)
+        self.assertIn("Expected: divisor is greater than one", rendered)
+
+    def test_transform_diagnostics_reject_lossy_time_without_raising(self) -> None:
+        report = diagnose_scale_time(
+            source_motif(),
+            0.5,
+            identifier="lossy",
+        )
+
+        self.assertTrue(report.has_errors)
+        self.assertIn(
+            "floating-point factors are rejected",
+            format_diagnostic_report(report),
+        )
+
+    def test_valid_transform_parameters_have_clean_diagnostics(self) -> None:
+        self.assertTrue(
+            diagnose_repeat(source_motif(), 2, identifier="twice").is_success
+        )
+        self.assertEqual(
+            format_diagnostic_report(
+                diagnose_repeat(source_motif(), 2, identifier="twice")
+            ),
+            "Diagnostics: clean",
+        )
 
 
 if __name__ == "__main__":

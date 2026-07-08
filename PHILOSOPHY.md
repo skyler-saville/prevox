@@ -156,6 +156,11 @@ have deterministic human-readable forms. These views support teaching, golden
 tests, bug reports, and musical reasoning. They are public explanations, not
 incidental object representations.
 
+User-facing failures should be explainable in the same spirit. A failed pass,
+invalid transform, rejected proposal, or impossible rendering target should
+produce diagnostics with a domain location and expected values, not just an
+opaque exception string.
+
 ### The model is situated, not universal
 
 Terms such as key, chord, scale, and bar reflect particular musical practices.

@@ -17,3 +17,4 @@ Accepted records:
 - [0003 — Model logical Voice rather than Track](0003-voice-not-track.md)
 - [0004 — Advance immutable CompositionState through proposals](0004-immutable-composition-state.md)
 - [0005 — Begin with deterministic temporal transformations](0005-temporal-motif-transformations.md)
+- [0006 — Represent user-facing failures as diagnostics](0006-diagnostics-as-values.md)

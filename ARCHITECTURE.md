@@ -295,6 +295,28 @@ of `repr()`. The manual pipeline trace is a version-controlled golden fixture.
 Formatting changes are reviewed like other observable behavior, while the
 format remains distinct from a future persistence or interchange schema.
 
+### Diagnostics
+
+Compiler-like workflows report user-facing problems with immutable diagnostics:
+
+```text
+severity
+code
+message
+domain location
+expected values
+notes
+```
+
+Domain locations describe the musical object path that produced the issue, such
+as `Song → Section → Motif`. Future DSL or project-file frontends may add source
+spans, but source spans are not required for diagnostics to be useful.
+
+Constructors may still raise exceptions for programmer-facing invariant
+violations. Frontends, validators, transforms, passes, renderers, and command
+line interfaces should prefer `DiagnosticReport` when reporting input or
+pipeline problems to a musician.
+
 ### Initial transformations
 
 The first middle-end passes operate on immutable Motifs and return new Motifs
@@ -312,6 +334,10 @@ These transformations use exact rational time and never mutate their input.
 Transpose, invert, and pitch mirroring are deferred until interval, tuning, and
 enharmonic-spelling semantics are explicit. They must not be implemented as
 hidden MIDI-number arithmetic.
+
+Transform preflight checks may return diagnostics before an operation is
+attempted. This is the first step toward pass-style behavior without introducing
+a full pass manager prematurely.
 
 ### Infrastructure and interfaces
 
