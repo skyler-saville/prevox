@@ -45,8 +45,12 @@ the same seed, the foundation works.
   vocabulary and semantics of both IRs.
 - [ROADMAP.md](ROADMAP.md) turns the vision into small, testable milestones.
 - [REFERENCES.md](REFERENCES.md) is the project's annotated research notebook.
+- [CONTRIBUTING.md](CONTRIBUTING.md) defines the engineering guardrails for
+  protecting the architecture.
 - [docs/adr/](docs/adr/) records accepted architectural decisions and their
   consequences.
+- [examples/](examples/) is the start of a cookbook of small musical pressure
+  tests.
 
 ## Run the architecture trace
 
@@ -61,12 +65,17 @@ poetry run python -m unittest discover -s tests -v
 poetry run python examples/manual_trace.py
 ```
 
+The tests include unit checks, golden output checks, and architectural tests
+that protect layering and long-lived invariants.
+
 ## Status
 
 Prevox is in phase 0.5: the IR playground and deterministic middle-end. The
 immutable domain model, canonical manual trace, golden fixture, and first
 temporal Motif transformations are implemented. Music IR is versioned, and
-transform preflight checks can report structured diagnostics. Pitch
-transformations await an explicit interval and tuning model. MIDI follows only
-after the Music IR survives these pressure tests. Logic integration, a GUI,
-plugin hosting, AI integration, and Strudel integration remain deferred.
+transform preflight checks can report structured diagnostics. The first
+read-only analyses measure density and motif reuse without judging or mutating
+the music. Pitch transformations await an explicit interval and tuning model.
+MIDI follows only after the Music IR survives these pressure tests. Logic
+integration, a GUI, plugin hosting, AI integration, and Strudel integration
+remain deferred.

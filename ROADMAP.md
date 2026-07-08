@@ -49,8 +49,10 @@ their weaknesses.
 Intent → Proposal → Critique → Acceptance → Music IR trace are implemented.
 Canonical aggregate formatting, a golden trace, and the first temporal Motif
 transformations are also implemented. Music IR is versioned, and transform
-preflight checks can now return compiler-style diagnostic reports. Pitch
-transformations remain deferred until interval and tuning semantics are
+preflight checks can now return compiler-style diagnostic reports. The first
+read-only analyses measure density and motif reuse. Architectural tests now
+protect import layering, immutable core values, and Music IR field boundaries.
+Pitch transformations remain deferred until interval and tuning semantics are
 explicit.
 
 - build a minimal console or notebook inspector;
@@ -59,13 +61,16 @@ explicit.
 - realize the plan into Music IR with one deliberately simple melody composer;
 - print Intent IR, Music IR, and the lowering decisions between them;
 - print each proposal's rationale, independent critiques, and acceptance reason;
+- inspect basic density and motif-reuse analysis reports;
 - report invalid transform or validation input through diagnostics;
+- keep architectural tests green when changing core layers;
 - keep the implementation small enough to replace when the model is wrong.
 
 **Exit criteria**
 
 - the intent tree makes compositional sense without notes;
 - the realized tree makes musical sense without MIDI;
+- examples remain small musical pressure tests rather than feature demos;
 - each realized phrase and event can be traced to intent and an actual decision;
 - one deterministic Critic can disagree with a Composer's predicted effect;
 - a RenderingProfile can assign a logical voice without changing Music IR;

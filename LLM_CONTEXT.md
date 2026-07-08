@@ -1,11 +1,11 @@
 # LLM Context
 
-> Last updated: 2026-07-06
+> Last updated: 2026-07-08
 >
 > Project phase: 0.5 — IR playground
 >
-> Implementation status: core types, canonical trace, and temporal transforms
-> are executable
+> Implementation status: core types, canonical trace, temporal transforms,
+> diagnostics, analyses, and architecture guardrails are executable
 
 ## Purpose
 
@@ -94,13 +94,16 @@ As of 2026-07-08:
 | Composer/Critic/Arbiter behavior | Not implemented |
 | Motif transformations | Reverse, repeat, scale, augment, diminish |
 | Diagnostics | Immutable diagnostic values and transform preflight reports |
+| Analyses | Density and motif-reuse reports over Music IR |
 | Canonical inspection | Aggregate formatters and manual golden trace |
+| Architectural tests | Import layering, immutability, and Music IR field guards |
+| Contribution guide | Engineering guardrails documented |
 | Rendering and MIDI | Designed only |
 | Production Python code | Domain types, inspection, and manual example |
-| Automated tests | Standard-library unit tests |
-| Executable examples | Manual eight-bar D Dorian trace |
+| Automated tests | Standard-library unit, golden, and architectural tests |
+| Executable examples | Manual eight-bar D Dorian trace; examples cookbook direction documented |
 | Golden fixtures | Canonical manual trace |
-| ADRs | Six accepted records under `docs/adr/` |
+| ADRs | Seven accepted records under `docs/adr/` |
 | Git repository | Initialized with `origin` set to `skyler-saville/prevox` |
 
 The Python project uses Poetry, targets Python 3.12 or newer, and has no runtime
@@ -212,6 +215,13 @@ Music IR is intended to be the project's most stable abstraction. During
 fixtures. This is a high bar, not a prohibition against correcting an early
 mistake.
 
+### Architecture is tested, not just documented
+
+The test suite includes source-level guardrails for import layering, frozen
+core domain values, and Music IR fields that must not become rendering or MIDI
+concerns. These tests are intentionally conservative: if one fails, either the
+change is architectural and needs a documented decision, or it is drift.
+
 ### Temporal transformations precede pitch transformations
 
 Reverse, repeat, exact time scaling, augmentation, and diminution operate on
@@ -233,6 +243,13 @@ diagnostic model includes severity, code, message, domain location, expected
 values, notes, and immutable reports. Transform preflight helpers are the first
 consumer. Low-level constructors may still raise exceptions for programmer
 invariant violations.
+
+### Analyses are pure measurements
+
+Analysis passes read Music IR and return `AnalysisReport` values containing
+named metrics plus optional diagnostics. They do not mutate Music IR and do not
+judge whether the result satisfies an intent. The first analyses measure note
+density and motif reuse; future Critics may consume these reports.
 
 ## Open decisions and active hypotheses
 
@@ -413,7 +430,7 @@ projections as well.
 
 ## Architecture Decision Records
 
-Six accepted ADRs now record the decisions exercised by code:
+Seven accepted ADRs now record the decisions exercised by code:
 
 ```text
 docs/adr/
@@ -422,7 +439,8 @@ docs/adr/
 ├── 0003-voice-not-track.md
 ├── 0004-immutable-composition-state.md
 ├── 0005-temporal-motif-transformations.md
-└── 0006-diagnostics-as-values.md
+├── 0006-diagnostics-as-values.md
+└── 0007-add-read-only-analysis-passes.md
 ```
 
 Performance IR remains open and has no ADR. If one is created before supporting

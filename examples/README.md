@@ -1,0 +1,31 @@
+# Prevox Examples
+
+Examples are living design pressure tests. They should be small enough to read
+in one sitting and musical enough to expose weaknesses in the model.
+
+The current example is:
+
+- `manual_trace.py` — a hand-constructed eight-bar D Dorian pipeline trace.
+
+Future examples should grow toward a cookbook of musical ideas:
+
+```text
+01_drone
+02_ostinato
+03_pedal_tone
+04_call_response
+05_theme_variation
+06_canon
+07_rhythmic_displacement
+```
+
+Each mature example should eventually include:
+
+- the intended musical idea;
+- the Intent or direct Music IR construction;
+- proposals, diagnostics, analyses, and acceptance decisions where relevant;
+- canonical formatted output;
+- rendered MIDI or another backend output once rendering exists.
+
+Do not add a large example to justify a vague abstraction. Add the smallest
+example that makes the architectural pressure visible.
