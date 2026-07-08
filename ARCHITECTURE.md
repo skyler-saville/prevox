@@ -238,8 +238,11 @@ Validator:
   Intent IR → PlanValidationReport
   Music IR  → MusicValidationReport
 
+Analysis:
+  Music IR → AnalysisReport
+
 Critic:
-  (Intent IR fragment, CompositionState, Proposal) → Critique
+  (Intent IR fragment, CompositionState, Proposal, AnalysisReports) → Critique
 
 Arbiter:
   (Proposals, Critiques, AcceptancePolicy) → AcceptanceDecision
@@ -260,6 +263,25 @@ Validators and Critics are related but not interchangeable. Validators establish
 facts, structural invariants, and constraint results. Critics interpret those
 facts in the context of an intent and proposal. Failed IR invariants make a
 proposal ineligible; they cannot be outweighed by favorable critic scores.
+
+Analyses are also distinct from Critics. An analysis pass measures Music IR and
+returns named facts such as note density or motif reuse. It may include
+diagnostics when it observes something noteworthy, but it does not decide
+whether the music is good, stylistically appropriate, or acceptable for an
+intent.
+
+### Analyses
+
+An Analysis is a pure read-only pass over Music IR. Initial analyses include:
+
+```text
+DensityAnalysis
+MotifReuseAnalysis
+```
+
+Analysis reports contain named metrics plus optional diagnostics. They are a
+middle-end observability tool and future input to Critics, not a mutation pass
+and not a policy layer.
 
 ### Critics and arbitration
 

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from fractions import Fraction
 from typing import Iterable
 
+from prevox.analysis import AnalysisMetric, AnalysisReport
 from prevox.diagnostics import Diagnostic, DiagnosticReport
 from prevox.domain import (
     AcceptanceDecision,
@@ -30,6 +31,12 @@ def _beat(value: Fraction) -> str:
 
 def _signed(value: float) -> str:
     return f"{value:+.2f}"
+
+
+def _metric_value(value: object) -> str:
+    if isinstance(value, Fraction):
+        return _beat(value)
+    return str(value)
 
 
 def _leaf(label: str) -> _Node:
@@ -83,6 +90,28 @@ def format_diagnostic_report(report: DiagnosticReport) -> str:
         _render_node(_diagnostic_node(diagnostic))
         for diagnostic in report.diagnostics
     )
+
+
+def _analysis_metric_node(metric: AnalysisMetric) -> _Node:
+    value = _metric_value(metric.value)
+    suffix = f" {metric.unit}" if metric.unit else ""
+    return _leaf(f"{metric.subject}: {metric.name}={value}{suffix}")
+
+
+def _analysis_report_node(report: AnalysisReport) -> _Node:
+    children = [
+        *(_analysis_metric_node(metric) for metric in report.metrics),
+        *(
+            _diagnostic_node(diagnostic)
+            for diagnostic in report.diagnostics.diagnostics
+        ),
+    ]
+    return _Node(f"Analysis: {report.name}", tuple(children))
+
+
+def format_analysis_report(report: AnalysisReport) -> str:
+    """Return the canonical human-readable analysis report form."""
+    return _render_node(_analysis_report_node(report))
 
 
 def _intent_node(intent: Intent) -> _Node:
