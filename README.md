@@ -44,6 +44,8 @@ the same seed, the foundation works.
 - [MUSICAL_GRAMMAR.md](MUSICAL_GRAMMAR.md) establishes the shared musical
   vocabulary and semantics of both IRs.
 - [ROADMAP.md](ROADMAP.md) turns the vision into small, testable milestones.
+- [docs/capabilities.md](docs/capabilities.md) tracks what the current IR and
+  compiler stages support.
 - [REFERENCES.md](REFERENCES.md) is the project's annotated research notebook.
 - [CONTRIBUTING.md](CONTRIBUTING.md) defines the engineering guardrails for
   protecting the architecture.
@@ -70,8 +72,9 @@ that protect layering and long-lived invariants.
 
 ## Status
 
-Prevox is in phase 0.5: the IR playground and deterministic middle-end. The
-immutable domain model, canonical manual trace, golden fixture, and first
+Phase 0 is complete. Prevox is now in phase 0.5: the IR playground and
+deterministic middle-end. The immutable domain model, canonical manual trace,
+golden fixture, and first
 temporal Motif transformations are implemented. Music IR is versioned, and
 transform preflight checks can report structured diagnostics. The first
 read-only analyses measure density and motif reuse without judging or mutating

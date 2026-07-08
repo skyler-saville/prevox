@@ -2,7 +2,7 @@
 
 > Last updated: 2026-07-08
 >
-> Project phase: 0.5 — IR playground
+> Project phase: 0 complete; 0.5 — IR playground active
 >
 > Implementation status: core types, canonical trace, temporal transforms,
 > diagnostics, analyses, and architecture guardrails are executable
@@ -87,6 +87,7 @@ As of 2026-07-08:
 | Philosophy and vision | Documented |
 | Architecture and grammar | Documented; initial boundaries exercised |
 | Research notebook | Seeded and expected to grow |
+| Capability matrix | Current frontend, middle-end, and backend support documented |
 | Intent IR | Initial immutable `Intent` and targets implemented |
 | Music IR | Initial immutable hierarchy, relative-time view, and schema version implemented |
 | CompositionState | Immutable acceptance transition implemented |
@@ -141,6 +142,21 @@ explicitly supersede them.
 The project deliberately began with Markdown rather than implementation. That
 phase has served its purpose. New abstractions now require evidence from small
 examples or a vertical slice.
+
+### Phase 0 is closed
+
+Phase 0 ended on 2026-07-08. The project now has self-reinforcing architecture:
+documents, ADRs, immutable values, deterministic transforms, diagnostics,
+analyses, canonical formatting, golden tests, architectural tests, and LLM
+handoff context are aligned. Future work should protect the middle-end rather
+than restart the foundation.
+
+### Think in compiler stages
+
+Roadmap planning should use frontend, middle-end, and backend categories rather
+than feature buckets. The current value is concentrated in the middle-end:
+Intent IR, Music IR, analysis, transformations, diagnostics, validation,
+critics, and future optimization.
 
 ### Two canonical semantic levels
 

@@ -6,9 +6,44 @@ Each phase should end in a playable or inspectable vertical slice. New
 abstractions are introduced by working features, not by filling an anticipated
 directory tree.
 
-## Phase 0 — Language and boundaries
+Prevox development is organized like a compiler:
+
+```text
+Frontend
+├── Intent DSL
+├── Python API
+├── live coding
+└── importers
+
+Middle-End
+├── Intent IR
+├── Music IR
+├── analysis
+├── transformations
+├── validation
+├── critics
+└── optimization
+
+Backends
+├── MIDI
+├── MusicXML
+├── Logic workflows
+├── REAPER workflows
+└── live MIDI
+```
+
+The current repository value is concentrated in the middle-end. Backend work
+should validate that center rather than pull backend concerns into it.
+
+## Phase 0 — Language and boundaries — complete
 
 **Outcome:** the project has a stable reason to exist and a shared vocabulary.
+
+**Closed on 2026-07-08:** Phase 0 is complete because the architecture is now
+self-reinforcing: philosophy, architecture, grammar, ADRs, immutable domain
+values, deterministic transforms, diagnostics, canonical formatting, golden
+tests, architecture tests, and LLM handoff context all point in the same
+direction.
 
 - agree on the vision, non-goals, and human collaboration loop;
 - record the philosophy used to settle future tradeoffs;
