@@ -45,4 +45,8 @@ Thumbs.db
 
 # Logs and local preview output
 *.log
-/test.mid
+artifacts/
+*.mid
+*.midi
+!tests/fixtures/**/*.mid
+!examples/**/*.mid
