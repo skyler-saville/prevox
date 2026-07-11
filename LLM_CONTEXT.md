@@ -1,11 +1,12 @@
 # LLM Context
 
-> Last updated: 2026-07-08
+> Last updated: 2026-07-11
 >
 > Project phase: 0 complete; 0.5 — IR playground active
 >
 > Implementation status: core types, canonical trace, temporal transforms,
-> diagnostics, analyses, and architecture guardrails are executable
+> diagnostics, analyses, architecture guardrails, and minimal MIDI export are
+> executable
 
 ## Purpose
 
@@ -99,22 +100,28 @@ As of 2026-07-08:
 | Canonical inspection | Aggregate formatters and manual golden trace |
 | Architectural tests | Import layering, immutability, and Music IR field guards |
 | Contribution guide | Engineering guardrails documented |
-| Rendering and MIDI | Designed only |
-| Production Python code | Domain types, inspection, and manual example |
+| Rendering and MIDI | Minimal MIDI file export implemented; import and profiles deferred |
+| Production Python code | Domain types, inspection, manual example, and MIDI export |
 | Automated tests | Standard-library unit, golden, and architectural tests |
-| Executable examples | Manual eight-bar D Dorian trace; examples cookbook direction documented |
+| Executable examples | Manual trace plus MIDI export preview; examples cookbook direction documented |
 | Golden fixtures | Canonical manual trace |
 | ADRs | Seven accepted records under `docs/adr/` |
 | Git repository | Initialized with `origin` set to `skyler-saville/prevox` |
 
-The Python project uses Poetry, targets Python 3.12 or newer, and has no runtime
-or test-library dependencies. Tests use `unittest`. Run:
+The Python project uses Poetry, targets Python 3.12 to 3.x before 4.0, and
+uses `mido` for Standard MIDI File export. Tests use `unittest`. Run:
 
 ```bash
 poetry install
 poetry run python -m unittest discover -s tests -v
 poetry run python examples/manual_trace.py
+poetry run python examples/export_manual_trace_midi.py
 ```
+
+Generated `.mid` files are ignored by default. Manual preview output should go
+under `artifacts/`, for example `artifacts/midi/manual_trace.mid`. Do not commit
+binary MIDI files unless they are intentionally placed under an allowed fixture
+or example path.
 
 ## Git workflow for future LLM sessions
 
@@ -239,6 +246,13 @@ belong in Music IR.
 
 Whether the performance projection should become a formal, reusable
 non-canonical Performance IR remains open.
+
+### MIDI export is a backend boundary
+
+The first MIDI renderer writes Standard MIDI Files from `MusicIR.iter_notes()`.
+It owns ticks-per-beat, preview velocity, channel, and a temporary 12-TET
+pitch-to-MIDI-number mapping. That mapping is backend-local and must not be
+treated as the core pitch or interval semantics.
 
 ### Music IR changes are stability-sensitive
 

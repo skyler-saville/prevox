@@ -59,12 +59,15 @@ the same seed, the foundation works.
 Prevox currently implements immutable core types and one completely manual
 eight-bar D Dorian trace. The first deterministic middle-end transformations
 support reversing, repeating, augmenting, and diminishing Motifs. It
-deliberately contains no Composer, randomness, MIDI, or rendering yet.
+deliberately contains no Composer, randomness, MIDI import, or full rendering
+profile yet. A minimal MIDI file exporter exists for previewing the manual
+trace.
 
 ```bash
 poetry install
 poetry run python -m unittest discover -s tests -v
 poetry run python examples/manual_trace.py
+poetry run python examples/export_manual_trace_midi.py
 ```
 
 The tests include unit checks, golden output checks, and architectural tests
@@ -79,6 +82,7 @@ temporal Motif transformations are implemented. Music IR is versioned, and
 transform preflight checks can report structured diagnostics. The first
 read-only analyses measure density and motif reuse without judging or mutating
 the music. Pitch transformations await an explicit interval and tuning model.
-MIDI follows only after the Music IR survives these pressure tests. Logic
+The first MIDI export spike can write the manual trace to
+`artifacts/midi/manual_trace.mid` for DAW preview. MIDI import, Logic
 integration, a GUI, plugin hosting, AI integration, and Strudel integration
 remain deferred.

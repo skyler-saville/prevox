@@ -47,7 +47,7 @@ Status legend:
 
 | Capability | Status | Notes |
 | --- | --- | --- |
-| MIDI export | 🧭 | Planned first backend; intentionally absent from Music IR. |
+| MIDI export | ✅ | Minimal deterministic Standard MIDI File writer for preview output. |
 | MusicXML export | 🧭 | Possible later backend. |
 | Logic workflow | 🧭 | Planned as a rendering/profile workflow, not a domain dependency. |
 | REAPER workflow | 🧭 | Possible later backend/workflow. |

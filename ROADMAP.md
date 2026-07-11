@@ -177,6 +177,12 @@ frameworks, and abstract plugin machinery.
 
 ### 2A: Export
 
+**Initial spike (2026-07-11):** a minimal deterministic MIDI file exporter can
+write the manual Music IR trace to `artifacts/midi/manual_trace.mid`. It uses a
+backend-local 12-TET preview pitch mapping, fixed ticks-per-beat, default
+velocity, and one channel. Rendering profiles, instrument assignment, and Logic
+template mapping remain deferred.
+
 - map beat positions and durations to MIDI ticks;
 - map logical voices through an explicit RenderingProfile;
 - export tempo, meter, tracks, note-on, and note-off events;

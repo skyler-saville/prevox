@@ -6,6 +6,8 @@ in one sitting and musical enough to expose weaknesses in the model.
 The current example is:
 
 - `manual_trace.py` — a hand-constructed eight-bar D Dorian pipeline trace.
+- `export_manual_trace_midi.py` — writes that trace to
+  `artifacts/midi/manual_trace.mid` for local DAW preview.
 
 Future examples should grow toward a cookbook of musical ideas:
 
