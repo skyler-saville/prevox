@@ -205,6 +205,10 @@ exporting `artifacts/midi/theory_cohesion.mid`.
 measures lead-line repetition, range, stepwise motion, large leaps, and contour
 direction changes. It does not define genre profiles or generate melodies yet.
 
+**Documentation checkpoint (2026-07-12):** ADRs and focused guides now document
+MIDI render profiles, backend-local GM drum preview, theory/melody analyses,
+the MIDI preview workflow, and analysis-pass metrics.
+
 - map beat positions and durations to MIDI ticks;
 - map logical voices through an explicit rendering profile;
 - export tempo, meter, tracks, note-on, and note-off events;

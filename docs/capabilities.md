@@ -59,7 +59,7 @@ Status legend:
 
 ## Next high-risk capability
 
-Pitch representation is the next major unresolved domain question. Decisions
-about interval, tuning, spelling, and equivalence will affect transpose,
-inversion, mirroring, interval analysis, voice leading, scale validation, and
-future non-12-TET support.
+The next high-risk middle-end capability is moving from analysis to informed
+generation or explicit repair. Pitch representation remains the major unresolved
+domain question for transpose, inversion, mirroring, voice leading, and future
+non-12-TET support.

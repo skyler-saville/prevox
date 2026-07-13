@@ -95,6 +95,27 @@ phrase occurs before or overlaps another.
 The first implementation may support twelve-tone equal temperament while the
 domain avoids encoding MIDI note numbers as pitches.
 
+### Tonal cohesion
+
+Tonal cohesion is a read-only measurement of how realized pitched voices relate
+to a song's tonal context and to each other. The first implementation measures
+scale membership and simple lead/bass vertical interval stability. It is not a
+hard rule, repair pass, or genre policy.
+
+### Melody hook features
+
+Melody hook features are measurable properties of lead-line material that may
+contribute to memorability: repetition, range, stepwise motion, large leaps,
+rhythmic repetition, and contour changes. These are facts for future Critics
+and Composers, not a universal definition of a good melody.
+
+### Renderer-local drum preview
+
+The current GM drum preview maps temporary symbolic rhythm pitches to General
+MIDI drum notes inside the MIDI backend. This is not a first-class percussion
+model. If percussion needs to be transformed, analyzed, or composed as
+percussion, the domain should gain an explicit percussion concept later.
+
 ### Events and containers
 
 - A **note** initially contains pitch, relative position, and duration.

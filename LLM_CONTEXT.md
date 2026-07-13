@@ -1,6 +1,6 @@
 # LLM Context
 
-> Last updated: 2026-07-11
+> Last updated: 2026-07-12
 >
 > Project phase: 0 complete; 0.5 — IR playground active
 >
@@ -105,7 +105,7 @@ As of 2026-07-08:
 | Automated tests | Standard-library unit, golden, and architectural tests |
 | Executable examples | Manual trace plus MIDI export preview; examples cookbook direction documented |
 | Golden fixtures | Canonical manual trace |
-| ADRs | Seven accepted records under `docs/adr/` |
+| ADRs | Ten accepted records under `docs/adr/` |
 | Git repository | Initialized with `origin` set to `skyler-saville/prevox` |
 
 The Python project uses Poetry, targets Python 3.12 to 3.x before 4.0, and
@@ -128,6 +128,25 @@ under `artifacts/`, for example `artifacts/midi/manual_trace.mid` or
 `artifacts/midi/drum_preview.mid`. Theory-cohesion preview output goes to
 `artifacts/midi/theory_cohesion.mid`. Do not commit binary MIDI files unless
 they are intentionally placed under an allowed fixture or example path.
+
+## Recent checkpoint: MIDI, theory, and melody
+
+Commits `efada3f` through `11a5ed6` established the first DAW-shaped vertical
+slice and the first theory-informed read-only analyses.
+
+- MIDI export uses `mido` and writes Standard MIDI Files.
+- MIDI render profiles map logical voices to tracks, channels, preview
+  velocities, and General MIDI programs below Music IR.
+- GM drum preview is backend-local on MIDI channel 10; first-class percussion
+  IR remains deferred.
+- Logic successfully imported the generated artifacts as separate software
+  instruments for lead, bass, and drums.
+- Tonal cohesion analysis measures scale membership and simple lead/bass
+  interval stability.
+- Melody hook analysis measures genre-neutral lead-line repetition, range,
+  motion, leaps, and contour changes.
+- The relevant guides are `docs/midi-preview-workflow.md` and
+  `docs/analysis-passes.md`.
 
 ## Git workflow for future LLM sessions
 
@@ -485,7 +504,7 @@ projections as well.
 
 ## Architecture Decision Records
 
-Seven accepted ADRs now record the decisions exercised by code:
+Ten accepted ADRs now record the decisions exercised by code:
 
 ```text
 docs/adr/
@@ -495,7 +514,10 @@ docs/adr/
 ├── 0004-immutable-composition-state.md
 ├── 0005-temporal-motif-transformations.md
 ├── 0006-diagnostics-as-values.md
-└── 0007-add-read-only-analysis-passes.md
+├── 0007-add-read-only-analysis-passes.md
+├── 0008-midi-render-profiles.md
+├── 0009-backend-local-drum-preview.md
+└── 0010-theory-and-melody-analyses.md
 ```
 
 Performance IR remains open and has no ADR. If one is created before supporting

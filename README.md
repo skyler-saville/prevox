@@ -46,6 +46,10 @@ the same seed, the foundation works.
 - [ROADMAP.md](ROADMAP.md) turns the vision into small, testable milestones.
 - [docs/capabilities.md](docs/capabilities.md) tracks what the current IR and
   compiler stages support.
+- [docs/analysis-passes.md](docs/analysis-passes.md) explains current
+  read-only middle-end analyses and their metrics.
+- [docs/midi-preview-workflow.md](docs/midi-preview-workflow.md) documents
+  generated MIDI artifacts and the Logic preview workflow.
 - [REFERENCES.md](REFERENCES.md) is the project's annotated research notebook.
 - [CONTRIBUTING.md](CONTRIBUTING.md) defines the engineering guardrails for
   protecting the architecture.
@@ -76,6 +80,19 @@ poetry run python examples/analyze_melody_hooks.py
 
 The tests include unit checks, golden output checks, and architectural tests
 that protect layering and long-lived invariants.
+
+## Current proving loops
+
+Prevox currently has two useful feedback loops:
+
+- **Middle-end analysis:** inspect density, motif reuse, tonal cohesion, and
+  melody-hook metrics without rendering or mutating Music IR.
+- **MIDI preview:** regenerate ignored `.mid` artifacts under `artifacts/midi/`
+  and import them into Logic or another DAW.
+
+Logic has successfully imported the recent preview artifacts as separate
+software instruments for lead, bass, and drums. That validates the standard MIDI
+backend path while keeping DAW-specific concepts out of Music IR.
 
 ## Status
 
