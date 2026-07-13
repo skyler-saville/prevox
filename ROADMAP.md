@@ -84,11 +84,11 @@ their weaknesses.
 Intent → Proposal → Critique → Acceptance → Music IR trace are implemented.
 Canonical aggregate formatting, a golden trace, and the first temporal Motif
 transformations are also implemented. Music IR is versioned, and transform
-preflight checks can now return compiler-style diagnostic reports. The first
-read-only analyses measure density and motif reuse. Architectural tests now
-protect import layering, immutable core values, and Music IR field boundaries.
-Pitch transformations remain deferred until interval and tuning semantics are
-explicit.
+preflight checks can now return compiler-style diagnostic reports. Read-only
+analyses measure density, motif reuse, and first-pass tonal cohesion.
+Architectural tests now protect import layering, immutable core values, and
+Music IR field boundaries. Pitch transformations remain deferred until interval
+and tuning semantics are explicit.
 
 - build a minimal console or notebook inspector;
 - hand-construct an eight-bar Intent IR plan in D Dorian;
@@ -194,6 +194,11 @@ a temporary symbolic rhythm voice to General MIDI drum notes on MIDI channel 9.
 The example `examples/export_drum_preview_midi.py` writes
 `artifacts/midi/drum_preview.mid`. This deliberately does not settle the future
 domain model for percussion events.
+
+**Dorian cohesion preview spike (2026-07-12):** a read-only tonal cohesion
+analysis validates Dorian scale membership, ignores temporary drum-preview
+voices, and measures simple lead/bass vertical interval stability before
+exporting `artifacts/midi/theory_cohesion.mid`.
 
 - map beat positions and durations to MIDI ticks;
 - map logical voices through an explicit rendering profile;

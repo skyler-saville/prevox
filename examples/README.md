@@ -14,6 +14,8 @@ The current example is:
 - `export_drum_preview_midi.py` — writes a one-bar GM drum preview to
   `artifacts/midi/drum_preview.mid`, using a renderer-local drum map on MIDI
   channel 9.
+- `export_theory_cohesion_midi.py` — analyzes a D Dorian lead, bass, and drum
+  preview for tonal cohesion, then writes `artifacts/midi/theory_cohesion.mid`.
 
 Future examples should grow toward a cookbook of musical ideas:
 

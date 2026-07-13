@@ -96,11 +96,11 @@ As of 2026-07-08:
 | Composer/Critic/Arbiter behavior | Not implemented |
 | Motif transformations | Reverse, repeat, scale, augment, diminish |
 | Diagnostics | Immutable diagnostic values and transform preflight reports |
-| Analyses | Density and motif-reuse reports over Music IR |
+| Analyses | Density, motif-reuse, and tonal-cohesion reports over Music IR |
 | Canonical inspection | Aggregate formatters and manual golden trace |
 | Architectural tests | Import layering, immutability, and Music IR field guards |
 | Contribution guide | Engineering guardrails documented |
-| Rendering and MIDI | Minimal MIDI file export implemented; multi-voice preview profiles and GM drum preview implemented; import deferred |
+| Rendering and MIDI | Minimal MIDI file export implemented; multi-voice preview profiles, GM drum preview, and theory-cohesion preview implemented; import deferred |
 | Production Python code | Domain types, inspection, manual example, and MIDI export |
 | Automated tests | Standard-library unit, golden, and architectural tests |
 | Executable examples | Manual trace plus MIDI export preview; examples cookbook direction documented |
@@ -118,13 +118,15 @@ poetry run python examples/manual_trace.py
 poetry run python examples/export_manual_trace_midi.py
 poetry run python examples/export_multi_voice_midi.py
 poetry run python examples/export_drum_preview_midi.py
+poetry run python examples/export_theory_cohesion_midi.py
 ```
 
 Generated `.mid` files are ignored by default. Manual preview output should go
 under `artifacts/`, for example `artifacts/midi/manual_trace.mid` or
 `artifacts/midi/multi_voice.mid`. Drum preview output goes to
-`artifacts/midi/drum_preview.mid`. Do not commit binary MIDI files unless they
-are intentionally placed under an allowed fixture or example path.
+`artifacts/midi/drum_preview.mid`. Theory-cohesion preview output goes to
+`artifacts/midi/theory_cohesion.mid`. Do not commit binary MIDI files unless
+they are intentionally placed under an allowed fixture or example path.
 
 ## Git workflow for future LLM sessions
 
@@ -298,7 +300,8 @@ invariant violations.
 Analysis passes read Music IR and return `AnalysisReport` values containing
 named metrics plus optional diagnostics. They do not mutate Music IR and do not
 judge whether the result satisfies an intent. The first analyses measure note
-density and motif reuse; future Critics may consume these reports.
+density, motif reuse, and Dorian-oriented tonal cohesion; future Critics may
+consume these reports.
 
 ## Open decisions and active hypotheses
 
@@ -419,7 +422,9 @@ temporal Motif transformations, canonical aggregate formatters, and one golden
 trace are tested.
 
 The next middle-end decision is the minimum pitch/interval model required for
-transpose and inversion. It must be tested against at least:
+transpose, inversion, and explicit repair. The first chromatic scale-membership
+and vertical-interval analysis exists, but transformation semantics still need
+to be tested against at least:
 
 ```text
 D Dorian diatonic material
