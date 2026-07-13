@@ -71,6 +71,7 @@ poetry run python examples/export_manual_trace_midi.py
 poetry run python examples/export_multi_voice_midi.py
 poetry run python examples/export_drum_preview_midi.py
 poetry run python examples/export_theory_cohesion_midi.py
+poetry run python examples/analyze_melody_hooks.py
 ```
 
 The tests include unit checks, golden output checks, and architectural tests
@@ -83,9 +84,9 @@ deterministic middle-end. The immutable domain model, canonical manual trace,
 golden fixture, and first
 temporal Motif transformations are implemented. Music IR is versioned, and
 transform preflight checks can report structured diagnostics. Read-only
-analyses measure density, motif reuse, and first-pass Dorian tonal cohesion
-without judging or mutating the music. Pitch transformations await an explicit
-interval and tuning model.
+analyses measure density, motif reuse, first-pass Dorian tonal cohesion, and
+genre-neutral melody hook features without judging or mutating the music. Pitch
+transformations await an explicit interval and tuning model.
 The first MIDI export spike can write the manual trace to
 `artifacts/midi/manual_trace.mid` for DAW preview, and a renderer-local MIDI
 profile can export logical voices as separate preview tracks in

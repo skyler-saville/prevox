@@ -4,6 +4,7 @@ from fractions import Fraction
 
 from prevox.analysis import (
     analyze_density,
+    analyze_melody_hook,
     analyze_motif_reuse,
     analyze_tonal_cohesion,
 )
@@ -167,6 +168,77 @@ def build_unsupported_tonal_context_ir() -> MusicIR:
     return MusicIR(song)
 
 
+def melody_fixture(
+    notes: tuple[Note, ...],
+    *,
+    identifier: str,
+    role: VoiceRole = VoiceRole.LEAD,
+) -> MusicIR:
+    motif = Motif(f"{identifier}-motif", duration=8, notes=notes)
+    phrase = Phrase(
+        f"{identifier}-phrase",
+        duration=8,
+        motifs=(Placement(motif, 0),),
+    )
+    voice = Voice(
+        "lead" if role is VoiceRole.LEAD else "bass",
+        role,
+        phrases=(Placement(phrase, 0),),
+    )
+    section = Section("verse", duration=8, voices=(voice,))
+    song = Song(
+        identifier,
+        f"{identifier} Melody Fixture",
+        duration=8,
+        tempo_bpm=120,
+        tonal_context=TonalContext(PitchClass.parse("D"), "Dorian"),
+        sections=(Placement(section, 0),),
+    )
+    return MusicIR(song)
+
+
+def hooky_melody_ir() -> MusicIR:
+    return melody_fixture(
+        (
+            Note(Pitch.parse("D4"), offset=0, duration=1),
+            Note(Pitch.parse("F4"), offset=1, duration=1),
+            Note(Pitch.parse("G4"), offset=2, duration=1),
+            Note(Pitch.parse("F4"), offset=3, duration=1),
+            Note(Pitch.parse("D4"), offset=4, duration=1),
+            Note(Pitch.parse("F4"), offset=5, duration=1),
+            Note(Pitch.parse("G4"), offset=6, duration=1),
+            Note(Pitch.parse("F4"), offset=7, duration=1),
+        ),
+        identifier="hooky",
+    )
+
+
+def wandering_melody_ir() -> MusicIR:
+    return melody_fixture(
+        (
+            Note(Pitch.parse("D3"), offset=0, duration=Fraction(1, 2)),
+            Note(Pitch.parse("A4"), offset=Fraction(1, 2), duration=Fraction(3, 2)),
+            Note(Pitch.parse("E3"), offset=2, duration=Fraction(1, 2)),
+            Note(Pitch.parse("C5"), offset=Fraction(5, 2), duration=1),
+            Note(Pitch.parse("F3"), offset=Fraction(7, 2), duration=Fraction(1, 2)),
+            Note(Pitch.parse("B4"), offset=4, duration=2),
+            Note(Pitch.parse("G3"), offset=6, duration=Fraction(1, 2)),
+            Note(Pitch.parse("D5"), offset=Fraction(13, 2), duration=1),
+        ),
+        identifier="wandering",
+    )
+
+
+def sparse_melody_ir() -> MusicIR:
+    return melody_fixture(
+        (
+            Note(Pitch.parse("D4"), offset=0, duration=1),
+            Note(Pitch.parse("F4"), offset=2, duration=1),
+        ),
+        identifier="sparse",
+    )
+
+
 class AnalysisTests(unittest.TestCase):
     def test_density_analysis_measures_realized_notes(self) -> None:
         report = analyze_density(build_reused_motif_ir())
@@ -252,6 +324,82 @@ class AnalysisTests(unittest.TestCase):
         before = tuple(music.iter_notes())
 
         analyze_tonal_cohesion(music)
+
+        self.assertEqual(tuple(music.iter_notes()), before)
+
+    def test_melody_hook_analysis_measures_repetition_and_motion(self) -> None:
+        hooky_report = analyze_melody_hook(hooky_melody_ir())
+        wandering_report = analyze_melody_hook(wandering_melody_ir())
+        hooky = {
+            (metric.subject, metric.name): metric.value
+            for metric in hooky_report.metrics
+        }
+        wandering = {
+            (metric.subject, metric.name): metric.value
+            for metric in wandering_report.metrics
+        }
+
+        self.assertEqual(hooky_report.name, "MelodyHookAnalysis")
+        self.assertTrue(hooky_report.diagnostics.is_success)
+        self.assertGreater(
+            hooky[("music", "pitch_repetition_ratio")],
+            wandering[("music", "pitch_repetition_ratio")],
+        )
+        self.assertGreater(
+            hooky[("music", "rhythmic_repetition_ratio")],
+            wandering[("music", "rhythmic_repetition_ratio")],
+        )
+        self.assertLess(
+            hooky[("music", "range_chromas")],
+            wandering[("music", "range_chromas")],
+        )
+        self.assertLess(
+            hooky[("music", "large_leap_count")],
+            wandering[("music", "large_leap_count")],
+        )
+        self.assertGreater(
+            hooky[("music", "stepwise_motion_ratio")],
+            wandering[("music", "stepwise_motion_ratio")],
+        )
+
+    def test_melody_hook_analysis_counts_contour_direction_changes(self) -> None:
+        report = analyze_melody_hook(hooky_melody_ir())
+        metrics = {(metric.subject, metric.name): metric.value for metric in report.metrics}
+
+        self.assertEqual(metrics[("music", "contour_direction_changes")], 3)
+
+    def test_melody_hook_analysis_reports_missing_lead_voice(self) -> None:
+        report = analyze_melody_hook(
+            melody_fixture(
+                (
+                    Note(Pitch.parse("D2"), offset=0, duration=1),
+                    Note(Pitch.parse("A2"), offset=1, duration=1),
+                ),
+                identifier="no-lead",
+                role=VoiceRole.BASS,
+            )
+        )
+
+        self.assertEqual(
+            tuple(diagnostic.code for diagnostic in report.diagnostics.diagnostics),
+            ("analysis.no_lead_voice",),
+        )
+        self.assertFalse(report.diagnostics.has_errors)
+
+    def test_melody_hook_analysis_reports_sparse_melody(self) -> None:
+        report = analyze_melody_hook(sparse_melody_ir())
+
+        self.assertEqual(
+            tuple(diagnostic.code for diagnostic in report.diagnostics.diagnostics),
+            ("analysis.melody_too_sparse",),
+        )
+        self.assertFalse(report.diagnostics.has_errors)
+
+    def test_melody_hook_analysis_does_not_mutate_music_ir(self) -> None:
+        music = hooky_melody_ir()
+        before = tuple(music.iter_notes())
+
+        analyze_melody_hook(music)
 
         self.assertEqual(tuple(music.iter_notes()), before)
 

@@ -16,6 +16,8 @@ The current example is:
   channel 9.
 - `export_theory_cohesion_midi.py` — analyzes a D Dorian lead, bass, and drum
   preview for tonal cohesion, then writes `artifacts/midi/theory_cohesion.mid`.
+- `analyze_melody_hooks.py` — compares a compact repeated melody with a wider
+  wandering melody using genre-neutral hook analysis metrics.
 
 Future examples should grow toward a cookbook of musical ideas:
 

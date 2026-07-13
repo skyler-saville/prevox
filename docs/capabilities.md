@@ -30,7 +30,7 @@ Status legend:
 | Logical Voice independent of instruments | ✅ | Music IR contains no track, channel, patch, plugin, or instrument assignment. |
 | Deterministic temporal transformations | ✅ | Reverse, repeat, scale time, augment, and diminish Motifs. |
 | Structured diagnostics | ✅ | Diagnostic values and reports exist for compiler-style workflows. |
-| Read-only analyses | ✅ | Density, motif-reuse, and tonal-cohesion analyses return immutable reports. |
+| Read-only analyses | ✅ | Density, motif-reuse, tonal-cohesion, and melody-hook analyses return immutable reports. |
 | Architectural guardrail tests | ✅ | Import layering, immutability, and Music IR field boundaries are tested. |
 | Semantic tests | ✅ | Initial tests assert temporal-transform musical properties. |
 | Validation passes | 🚧 | Concepts documented; only constructor invariants and diagnostics exist today. |
@@ -51,6 +51,7 @@ Status legend:
 | MIDI voice profiles | ✅ | Logical voices can render as separate MIDI preview tracks, channels, velocities, and General MIDI programs without changing Music IR. |
 | GM drum preview | ✅ | Temporary backend-local drum maps can render rhythm voices on MIDI channel 9; first-class percussion IR is still undecided. |
 | Theory cohesion preview | ✅ | A D Dorian lead, bass, and drum example can be analyzed and exported for DAW preview. |
+| Melody hook analysis | ✅ | Genre-neutral lead-line metrics measure repetition, range, stepwise motion, leaps, and contour changes. |
 | MusicXML export | 🧭 | Possible later backend. |
 | Logic workflow | 🧭 | Planned as a rendering/profile workflow, not a domain dependency. |
 | REAPER workflow | 🧭 | Possible later backend/workflow. |

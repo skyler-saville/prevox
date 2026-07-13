@@ -85,7 +85,8 @@ Intent → Proposal → Critique → Acceptance → Music IR trace are implement
 Canonical aggregate formatting, a golden trace, and the first temporal Motif
 transformations are also implemented. Music IR is versioned, and transform
 preflight checks can now return compiler-style diagnostic reports. Read-only
-analyses measure density, motif reuse, and first-pass tonal cohesion.
+analyses measure density, motif reuse, first-pass tonal cohesion, and
+genre-neutral melody hook features.
 Architectural tests now protect import layering, immutable core values, and
 Music IR field boundaries. Pitch transformations remain deferred until interval
 and tuning semantics are explicit.
@@ -199,6 +200,10 @@ domain model for percussion events.
 analysis validates Dorian scale membership, ignores temporary drum-preview
 voices, and measures simple lead/bass vertical interval stability before
 exporting `artifacts/midi/theory_cohesion.mid`.
+
+**Melody hook analysis spike (2026-07-12):** a genre-neutral read-only analysis
+measures lead-line repetition, range, stepwise motion, large leaps, and contour
+direction changes. It does not define genre profiles or generate melodies yet.
 
 - map beat positions and durations to MIDI ticks;
 - map logical voices through an explicit rendering profile;

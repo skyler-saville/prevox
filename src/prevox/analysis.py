@@ -13,6 +13,7 @@ from prevox.diagnostics import (
 from prevox.domain._values import require_identifier
 from prevox.domain.music import MusicIR, Pitch, RealizedNote, VoiceRole
 from prevox.theory import (
+    absolute_pitch_chroma,
     all_preview_percussion,
     build_scale,
     is_stable_vertical_interval,
@@ -253,6 +254,76 @@ def analyze_tonal_cohesion(music: MusicIR) -> AnalysisReport:
     return AnalysisReport("TonalCohesionAnalysis", metrics, diagnostics)
 
 
+def analyze_melody_hook(music: MusicIR) -> AnalysisReport:
+    """Measure genre-neutral hook-like properties of lead-voice material."""
+    _require_music_ir(music)
+    diagnostics = DiagnosticReport()
+    lead_notes = tuple(
+        sorted(
+            _notes_for_role(music, VoiceRole.LEAD),
+            key=lambda note: (note.offset, note.pitch),
+        )
+    )
+
+    if not lead_notes:
+        diagnostics = diagnostics.add(
+            Diagnostic(
+                code="analysis.no_lead_voice",
+                severity=DiagnosticSeverity.WARNING,
+                message="music contains no lead-voice notes to analyze",
+                location=_music_location(music),
+                expected=("at least one VoiceRole.LEAD note",),
+            )
+        )
+
+    if 0 < len(lead_notes) < 4:
+        diagnostics = diagnostics.add(
+            Diagnostic(
+                code="analysis.melody_too_sparse",
+                severity=DiagnosticSeverity.INFO,
+                message="lead melody is too sparse for reliable hook analysis",
+                location=_music_location(music),
+                expected=("at least four lead notes",),
+            )
+        )
+
+    pitch_values = tuple(absolute_pitch_chroma(note.pitch) for note in lead_notes)
+    durations = tuple(note.duration for note in lead_notes)
+    intervals = tuple(
+        pitch_values[index + 1] - pitch_values[index]
+        for index in range(len(pitch_values) - 1)
+    )
+    motions = tuple(_sign(interval) for interval in intervals if interval != 0)
+
+    metrics = [
+        AnalysisMetric("lead_note_count", len(lead_notes)),
+        AnalysisMetric("unique_pitch_count", len(set(pitch_values))),
+        AnalysisMetric("pitch_repetition_ratio", _repetition_ratio(pitch_values)),
+        AnalysisMetric("rhythmic_repetition_ratio", _repetition_ratio(durations)),
+        AnalysisMetric(
+            "range_chromas",
+            max(pitch_values) - min(pitch_values) if pitch_values else 0,
+        ),
+        AnalysisMetric(
+            "stepwise_motion_ratio",
+            _stepwise_motion_ratio(intervals),
+        ),
+        AnalysisMetric(
+            "large_leap_count",
+            sum(1 for interval in intervals if abs(interval) > 7),
+        ),
+        AnalysisMetric(
+            "contour_direction_changes",
+            sum(
+                1
+                for index in range(len(motions) - 1)
+                if motions[index] != motions[index + 1]
+            ),
+        ),
+    ]
+    return AnalysisReport("MelodyHookAnalysis", metrics, diagnostics)
+
+
 def _preview_percussion_voice_ids(music: MusicIR) -> set[str]:
     voice_roles = {
         voice.identifier: voice.role
@@ -268,6 +339,39 @@ def _preview_percussion_voice_ids(music: MusicIR) -> set[str]:
         if voice_roles.get(voice_id) is VoiceRole.PULSE
         and all_preview_percussion(pitches)
     }
+
+
+def _notes_for_role(
+    music: MusicIR,
+    role: VoiceRole,
+) -> tuple[RealizedNote, ...]:
+    voice_roles = {
+        voice.identifier: voice.role
+        for section_placement in music.song.sections
+        for voice in section_placement.item.voices
+    }
+    return tuple(
+        note for note in music.iter_notes() if voice_roles.get(note.voice_id) is role
+    )
+
+
+def _repetition_ratio(values: tuple[object, ...]) -> Fraction:
+    if not values:
+        return Fraction(0, 1)
+    return Fraction(len(values) - len(set(values)), len(values))
+
+
+def _stepwise_motion_ratio(intervals: tuple[int, ...]) -> Fraction:
+    if not intervals:
+        return Fraction(0, 1)
+    return Fraction(
+        sum(1 for interval in intervals if 0 < abs(interval) <= 2),
+        len(intervals),
+    )
+
+
+def _sign(value: int) -> int:
+    return 1 if value > 0 else -1
 
 
 def _lead_bass_vertical_intervals(

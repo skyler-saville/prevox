@@ -96,7 +96,7 @@ As of 2026-07-08:
 | Composer/Critic/Arbiter behavior | Not implemented |
 | Motif transformations | Reverse, repeat, scale, augment, diminish |
 | Diagnostics | Immutable diagnostic values and transform preflight reports |
-| Analyses | Density, motif-reuse, and tonal-cohesion reports over Music IR |
+| Analyses | Density, motif-reuse, tonal-cohesion, and melody-hook reports over Music IR |
 | Canonical inspection | Aggregate formatters and manual golden trace |
 | Architectural tests | Import layering, immutability, and Music IR field guards |
 | Contribution guide | Engineering guardrails documented |
@@ -119,6 +119,7 @@ poetry run python examples/export_manual_trace_midi.py
 poetry run python examples/export_multi_voice_midi.py
 poetry run python examples/export_drum_preview_midi.py
 poetry run python examples/export_theory_cohesion_midi.py
+poetry run python examples/analyze_melody_hooks.py
 ```
 
 Generated `.mid` files are ignored by default. Manual preview output should go
@@ -299,9 +300,9 @@ invariant violations.
 
 Analysis passes read Music IR and return `AnalysisReport` values containing
 named metrics plus optional diagnostics. They do not mutate Music IR and do not
-judge whether the result satisfies an intent. The first analyses measure note
-density, motif reuse, and Dorian-oriented tonal cohesion; future Critics may
-consume these reports.
+judge whether the result satisfies an intent. Current analyses measure note
+density, motif reuse, Dorian-oriented tonal cohesion, and genre-neutral melody
+hook features; future Critics may consume these reports.
 
 ## Open decisions and active hypotheses
 
