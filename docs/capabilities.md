@@ -49,6 +49,7 @@ Status legend:
 | --- | --- | --- |
 | MIDI export | ✅ | Minimal deterministic Standard MIDI File writer for preview output. |
 | MIDI voice profiles | ✅ | Logical voices can render as separate MIDI preview tracks, channels, velocities, and General MIDI programs without changing Music IR. |
+| GM drum preview | ✅ | Temporary backend-local drum maps can render rhythm voices on MIDI channel 9; first-class percussion IR is still undecided. |
 | MusicXML export | 🧭 | Possible later backend. |
 | Logic workflow | 🧭 | Planned as a rendering/profile workflow, not a domain dependency. |
 | REAPER workflow | 🧭 | Possible later backend/workflow. |

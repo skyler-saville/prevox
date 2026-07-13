@@ -11,6 +11,9 @@ The current example is:
 - `export_multi_voice_midi.py` — writes a tiny lead-and-bass preview to
   `artifacts/midi/multi_voice.mid`, using renderer-local voice assignments for
   tracks, channels, velocity, and General MIDI programs.
+- `export_drum_preview_midi.py` — writes a one-bar GM drum preview to
+  `artifacts/midi/drum_preview.mid`, using a renderer-local drum map on MIDI
+  channel 9.
 
 Future examples should grow toward a cookbook of musical ideas:
 

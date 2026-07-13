@@ -69,6 +69,7 @@ poetry run python -m unittest discover -s tests -v
 poetry run python examples/manual_trace.py
 poetry run python examples/export_manual_trace_midi.py
 poetry run python examples/export_multi_voice_midi.py
+poetry run python examples/export_drum_preview_midi.py
 ```
 
 The tests include unit checks, golden output checks, and architectural tests
@@ -86,5 +87,7 @@ the music. Pitch transformations await an explicit interval and tuning model.
 The first MIDI export spike can write the manual trace to
 `artifacts/midi/manual_trace.mid` for DAW preview, and a renderer-local MIDI
 profile can export logical voices as separate preview tracks in
-`artifacts/midi/multi_voice.mid`. MIDI import, Logic integration, a GUI, plugin
-hosting, AI integration, and Strudel integration remain deferred.
+`artifacts/midi/multi_voice.mid`. A temporary backend-local General MIDI drum
+preview can export `artifacts/midi/drum_preview.mid` without making drums part
+of Music IR yet. MIDI import, Logic integration, a GUI, plugin hosting, AI
+integration, and Strudel integration remain deferred.

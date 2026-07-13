@@ -189,6 +189,12 @@ MIDI program changes. The example `examples/export_multi_voice_midi.py` writes
 `artifacts/midi/multi_voice.mid` while preserving the rule that Music IR knows
 voices, not instruments.
 
+**GM drum preview spike (2026-07-12):** a renderer-local drum assignment can map
+a temporary symbolic rhythm voice to General MIDI drum notes on MIDI channel 9.
+The example `examples/export_drum_preview_midi.py` writes
+`artifacts/midi/drum_preview.mid`. This deliberately does not settle the future
+domain model for percussion events.
+
 - map beat positions and durations to MIDI ticks;
 - map logical voices through an explicit rendering profile;
 - export tempo, meter, tracks, note-on, and note-off events;

@@ -23,6 +23,16 @@ _PITCH_CLASS_TO_SEMITONE = {
     "B": 11,
 }
 
+GM_DRUM_CHANNEL = 9
+GM_DRUM_NOTES = {
+    "kick": 36,
+    "snare": 38,
+    "closed_hat": 42,
+    "open_hat": 46,
+    "crash": 49,
+    "ride": 51,
+}
+
 
 def midi_note_number(pitch: Pitch) -> int:
     """Map a spelled Pitch to a MIDI note number using preview 12-TET policy."""
@@ -75,6 +85,22 @@ def _validate_program(program: int) -> None:
         raise ValueError("program must be between 0 and 127")
 
 
+def _validate_drum_note(note: int) -> None:
+    if isinstance(note, bool) or not isinstance(note, int) or not 0 <= note <= 127:
+        raise ValueError("drum MIDI note must be between 0 and 127")
+
+
+def _default_preview_drum_map() -> dict[Pitch, int]:
+    return {
+        Pitch.parse("C2"): GM_DRUM_NOTES["kick"],
+        Pitch.parse("D2"): GM_DRUM_NOTES["snare"],
+        Pitch.parse("F#2"): GM_DRUM_NOTES["closed_hat"],
+        Pitch.parse("G#2"): GM_DRUM_NOTES["open_hat"],
+        Pitch.parse("C#3"): GM_DRUM_NOTES["crash"],
+        Pitch.parse("D#3"): GM_DRUM_NOTES["ride"],
+    }
+
+
 @dataclass(frozen=True, slots=True)
 class MidiVoiceAssignment:
     """Renderer-local MIDI preview choices for one logical voice."""
@@ -83,6 +109,7 @@ class MidiVoiceAssignment:
     program: int | None = None
     velocity: int | None = None
     track_name: str | None = None
+    drum_map: tuple[tuple[Pitch, int], ...] = ()
 
     def __post_init__(self) -> None:
         _validate_channel(self.channel)
@@ -92,6 +119,50 @@ class MidiVoiceAssignment:
             _validate_velocity(self.velocity)
         if self.track_name is not None and not self.track_name.strip():
             raise ValueError("track_name must be non-empty when provided")
+        if any(
+            not isinstance(pitch, Pitch) or not isinstance(note, int)
+            for pitch, note in self.drum_map
+        ):
+            raise TypeError("drum_map must contain Pitch to MIDI note pairs")
+        seen: set[Pitch] = set()
+        for pitch, note in self.drum_map:
+            if pitch in seen:
+                raise ValueError(f"duplicate drum_map pitch {pitch}")
+            _validate_drum_note(note)
+            seen.add(pitch)
+        if self.drum_map and self.channel != GM_DRUM_CHANNEL:
+            raise ValueError("drum_map assignments must use GM drum channel 9")
+
+    @classmethod
+    def gm_drums(
+        cls,
+        *,
+        velocity: int | None = None,
+        track_name: str = "Drums",
+        drum_map: Mapping[Pitch, int] | Iterable[tuple[Pitch, int]] | None = None,
+    ) -> "MidiVoiceAssignment":
+        """Create a General MIDI drum assignment for a temporary preview voice."""
+        selected_map = _default_preview_drum_map() if drum_map is None else drum_map
+        normalized = (
+            tuple(selected_map.items())
+            if isinstance(selected_map, Mapping)
+            else tuple(selected_map)
+        )
+        return cls(
+            channel=GM_DRUM_CHANNEL,
+            velocity=velocity,
+            track_name=track_name,
+            drum_map=normalized,
+        )
+
+    def note_number_for(self, pitch: Pitch) -> int:
+        """Return the backend MIDI note number for a symbolic pitch."""
+        for mapped_pitch, note_number in self.drum_map:
+            if mapped_pitch == pitch:
+                return note_number
+        if self.drum_map:
+            raise ValueError(f"pitch {pitch} is not present in drum_map")
+        return midi_note_number(pitch)
 
 
 @dataclass(frozen=True, slots=True)
@@ -193,6 +264,7 @@ class MidiRenderer:
             track,
             self._messages(
                 music.iter_notes(),
+                assignment=None,
                 channel=self.channel,
                 velocity=self.preview_velocity,
             ),
@@ -255,6 +327,7 @@ class MidiRenderer:
                 track,
                 self._messages(
                     notes,
+                    assignment=assignment,
                     channel=assignment.channel,
                     velocity=velocity,
                 ),
@@ -287,12 +360,17 @@ class MidiRenderer:
         self,
         notes: Iterable[RealizedNote],
         *,
+        assignment: MidiVoiceAssignment | None,
         channel: int,
         velocity: int,
     ) -> tuple[tuple[int, Message], ...]:
         events: list[tuple[int, int, int, Message]] = []
         for note in notes:
-            note_number = midi_note_number(note.pitch)
+            note_number = (
+                assignment.note_number_for(note.pitch)
+                if assignment is not None
+                else midi_note_number(note.pitch)
+            )
             start = _ticks(
                 note.offset,
                 ticks_per_beat=self.ticks_per_beat,

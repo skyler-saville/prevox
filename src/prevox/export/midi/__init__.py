@@ -1,6 +1,8 @@
 """MIDI file export for backend-independent Music IR."""
 
 from prevox.export.midi.renderer import (
+    GM_DRUM_CHANNEL,
+    GM_DRUM_NOTES,
     MidiRenderer,
     MidiRenderProfile,
     MidiVoiceAssignment,
@@ -8,6 +10,8 @@ from prevox.export.midi.renderer import (
 )
 
 __all__ = [
+    "GM_DRUM_CHANNEL",
+    "GM_DRUM_NOTES",
     "MidiRenderer",
     "MidiRenderProfile",
     "MidiVoiceAssignment",

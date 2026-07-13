@@ -21,6 +21,8 @@ from prevox.domain import (
     VoiceRole,
 )
 from prevox.export.midi import (
+    GM_DRUM_CHANNEL,
+    GM_DRUM_NOTES,
     MidiRenderer,
     MidiRenderProfile,
     MidiVoiceAssignment,
@@ -174,6 +176,54 @@ def multi_voice_profile() -> MidiRenderProfile:
                 program=33,
                 velocity=84,
                 track_name="Bass Preview",
+            ),
+        }
+    )
+
+
+def drum_preview_music() -> MusicIR:
+    drum_motif = Motif(
+        "drum-motif",
+        duration=4,
+        notes=(
+            Note(Pitch.parse("C2"), offset=0, duration=Fraction(1, 2)),
+            Note(Pitch.parse("F#2"), offset=Fraction(1, 2), duration=Fraction(1, 2)),
+            Note(Pitch.parse("D2"), offset=1, duration=Fraction(1, 2)),
+            Note(Pitch.parse("F#2"), offset=Fraction(3, 2), duration=Fraction(1, 2)),
+            Note(Pitch.parse("C2"), offset=2, duration=Fraction(1, 2)),
+            Note(Pitch.parse("F#2"), offset=Fraction(5, 2), duration=Fraction(1, 2)),
+            Note(Pitch.parse("D2"), offset=3, duration=Fraction(1, 2)),
+            Note(Pitch.parse("G#2"), offset=Fraction(7, 2), duration=Fraction(1, 2)),
+        ),
+    )
+    drum_phrase = Phrase(
+        "drum-phrase",
+        duration=4,
+        motifs=(Placement(drum_motif, 0),),
+    )
+    drums = Voice(
+        "drums",
+        VoiceRole.PULSE,
+        phrases=(Placement(drum_phrase, 0),),
+    )
+    section = Section("groove", duration=4, voices=(drums,))
+    song = Song(
+        "drum-preview",
+        "Drum Preview",
+        duration=4,
+        tempo_bpm=100,
+        tonal_context=TonalContext(PitchClass.parse("D"), "Dorian"),
+        sections=(Placement(section, 0),),
+    )
+    return MusicIR(song)
+
+
+def drum_preview_profile() -> MidiRenderProfile:
+    return MidiRenderProfile(
+        {
+            "drums": MidiVoiceAssignment.gm_drums(
+                velocity=96,
+                track_name="GM Drum Preview",
             ),
         }
     )
@@ -395,6 +445,72 @@ class MidiExportTests(unittest.TestCase):
             MidiVoiceAssignment(channel=0, track_name=" ")
         with self.assertRaisesRegex(ValueError, "voice_assignments"):
             MidiRenderProfile({})
+
+    def test_gm_drum_assignment_uses_channel_9_and_drum_note_map(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "drum_preview.mid"
+
+            MidiRenderer(profile=drum_preview_profile()).write(
+                drum_preview_music(),
+                path,
+            )
+
+            midi = MidiFile(path)
+            note_ons = tuple(
+                message
+                for message in midi.tracks[1]
+                if message.type == "note_on" and message.velocity > 0
+            )
+            self.assertEqual(
+                tuple(message.note for message in note_ons),
+                (
+                    GM_DRUM_NOTES["kick"],
+                    GM_DRUM_NOTES["closed_hat"],
+                    GM_DRUM_NOTES["snare"],
+                    GM_DRUM_NOTES["closed_hat"],
+                    GM_DRUM_NOTES["kick"],
+                    GM_DRUM_NOTES["closed_hat"],
+                    GM_DRUM_NOTES["snare"],
+                    GM_DRUM_NOTES["open_hat"],
+                ),
+            )
+            self.assertEqual({message.channel for message in note_ons}, {GM_DRUM_CHANNEL})
+            self.assertEqual({message.velocity for message in note_ons}, {96})
+            self.assertFalse(
+                any(message.type == "program_change" for message in midi.tracks[1])
+            )
+
+    def test_gm_drum_export_midi_projection_matches_golden_file(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "drum_preview.mid"
+
+            MidiRenderer(profile=drum_preview_profile()).write(
+                drum_preview_music(),
+                path,
+            )
+
+            golden = (GOLDEN_DIR / "drum_preview_midi.txt").read_text()
+            self.assertEqual(midi_projection(path), golden)
+
+    def test_drum_assignment_rejects_invalid_maps(self) -> None:
+        with self.assertRaisesRegex(ValueError, "GM drum channel"):
+            MidiVoiceAssignment(
+                channel=0,
+                drum_map=((Pitch.parse("C2"), GM_DRUM_NOTES["kick"]),),
+            )
+        with self.assertRaisesRegex(ValueError, "duplicate drum_map pitch"):
+            MidiVoiceAssignment.gm_drums(
+                drum_map=(
+                    (Pitch.parse("C2"), GM_DRUM_NOTES["kick"]),
+                    (Pitch.parse("C2"), GM_DRUM_NOTES["snare"]),
+                )
+            )
+        with self.assertRaisesRegex(ValueError, "drum MIDI note"):
+            MidiVoiceAssignment.gm_drums(drum_map=((Pitch.parse("C2"), 128),))
+        with self.assertRaisesRegex(ValueError, "not present in drum_map"):
+            MidiVoiceAssignment.gm_drums(
+                drum_map=((Pitch.parse("C2"), GM_DRUM_NOTES["kick"]),)
+            ).note_number_for(Pitch.parse("D2"))
 
 
 if __name__ == "__main__":
