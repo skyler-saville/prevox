@@ -30,14 +30,14 @@ Status legend:
 | Logical Voice independent of instruments | ✅ | Music IR contains no track, channel, patch, plugin, or instrument assignment. |
 | Deterministic temporal transformations | ✅ | Reverse, repeat, scale time, augment, and diminish Motifs. |
 | Structured diagnostics | ✅ | Diagnostic values and reports exist for compiler-style workflows. |
-| Read-only analyses | ✅ | Density and motif-reuse analyses return immutable reports. |
+| Read-only analyses | ✅ | Density, motif-reuse, tonal-cohesion, and melody-hook analyses return immutable reports. |
 | Architectural guardrail tests | ✅ | Import layering, immutability, and Music IR field boundaries are tested. |
 | Semantic tests | ✅ | Initial tests assert temporal-transform musical properties. |
 | Validation passes | 🚧 | Concepts documented; only constructor invariants and diagnostics exist today. |
 | Critics and arbitration behavior | 🚧 | Records exist; behavior is not implemented. |
 | Transformation provenance | 🚧 | Derived identifiers exist; structured provenance is not yet modeled. |
 | Pitch semantics | 🚧 | Spelled pitch values exist; interval/tuning semantics are not decided. |
-| Interval semantics | 🚧 | Required before transpose, invert, mirror, and interval analysis. |
+| Interval semantics | 🚧 | Simple chromatic vertical interval analysis exists; transpose, invert, and mirror remain deferred. |
 | Voice leading | 🚧 | Future theory/critic capability. |
 | Polyphony | 🚧 | Declared voice polyphony is supported; richer polyphonic semantics are open. |
 | Polymeter | ❌ | Not represented yet. |
@@ -47,7 +47,11 @@ Status legend:
 
 | Capability | Status | Notes |
 | --- | --- | --- |
-| MIDI export | 🧭 | Planned first backend; intentionally absent from Music IR. |
+| MIDI export | ✅ | Minimal deterministic Standard MIDI File writer for preview output. |
+| MIDI voice profiles | ✅ | Logical voices can render as separate MIDI preview tracks, channels, velocities, and General MIDI programs without changing Music IR. |
+| GM drum preview | ✅ | Temporary backend-local drum maps can render rhythm voices on MIDI channel 9; first-class percussion IR is still undecided. |
+| Theory cohesion preview | ✅ | A D Dorian lead, bass, and drum example can be analyzed and exported for DAW preview. |
+| Melody hook analysis | ✅ | Genre-neutral lead-line metrics measure repetition, range, stepwise motion, leaps, and contour changes. |
 | MusicXML export | 🧭 | Possible later backend. |
 | Logic workflow | 🧭 | Planned as a rendering/profile workflow, not a domain dependency. |
 | REAPER workflow | 🧭 | Possible later backend/workflow. |
@@ -55,7 +59,7 @@ Status legend:
 
 ## Next high-risk capability
 
-Pitch representation is the next major unresolved domain question. Decisions
-about interval, tuning, spelling, and equivalence will affect transpose,
-inversion, mirroring, interval analysis, voice leading, scale validation, and
-future non-12-TET support.
+The next high-risk middle-end capability is moving from analysis to informed
+generation or explicit repair. Pitch representation remains the major unresolved
+domain question for transpose, inversion, mirroring, voice leading, and future
+non-12-TET support.

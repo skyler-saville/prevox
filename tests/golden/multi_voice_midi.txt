@@ -1,0 +1,34 @@
+MidiFile type=1
+Ticks per beat: 480
+Track 0
+  +0000 @00000 track_name name='Two Voice Preview Tempo'
+  +0000 @00000 set_tempo tempo=625000
+  +0000 @00000 end_of_track
+Track 1
+  +0000 @00000 track_name name='Lead Preview'
+  +0000 @00000 program_change program=80 channel=0
+  +0000 @00000 note_on note=62 velocity=72 channel=0
+  +0480 @00480 note_off note=62 velocity=0 channel=0
+  +0000 @00480 note_on note=65 velocity=72 channel=0
+  +0480 @00960 note_off note=65 velocity=0 channel=0
+  +0000 @00960 note_on note=69 velocity=72 channel=0
+  +0960 @01920 note_off note=69 velocity=0 channel=0
+  +0000 @01920 note_on note=62 velocity=72 channel=0
+  +0480 @02400 note_off note=62 velocity=0 channel=0
+  +0000 @02400 note_on note=65 velocity=72 channel=0
+  +0480 @02880 note_off note=65 velocity=0 channel=0
+  +0000 @02880 note_on note=69 velocity=72 channel=0
+  +0960 @03840 note_off note=69 velocity=0 channel=0
+  +0000 @03840 end_of_track
+Track 2
+  +0000 @00000 track_name name='Bass Preview'
+  +0000 @00000 program_change program=33 channel=1
+  +0000 @00000 note_on note=38 velocity=84 channel=1
+  +0960 @00960 note_off note=38 velocity=0 channel=1
+  +0000 @00960 note_on note=45 velocity=84 channel=1
+  +0960 @01920 note_off note=45 velocity=0 channel=1
+  +0000 @01920 note_on note=38 velocity=84 channel=1
+  +0960 @02880 note_off note=38 velocity=0 channel=1
+  +0000 @02880 note_on note=45 velocity=84 channel=1
+  +0960 @03840 note_off note=45 velocity=0 channel=1
+  +0000 @03840 end_of_track

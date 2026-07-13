@@ -46,6 +46,10 @@ the same seed, the foundation works.
 - [ROADMAP.md](ROADMAP.md) turns the vision into small, testable milestones.
 - [docs/capabilities.md](docs/capabilities.md) tracks what the current IR and
   compiler stages support.
+- [docs/analysis-passes.md](docs/analysis-passes.md) explains current
+  read-only middle-end analyses and their metrics.
+- [docs/midi-preview-workflow.md](docs/midi-preview-workflow.md) documents
+  generated MIDI artifacts and the Logic preview workflow.
 - [REFERENCES.md](REFERENCES.md) is the project's annotated research notebook.
 - [CONTRIBUTING.md](CONTRIBUTING.md) defines the engineering guardrails for
   protecting the architecture.
@@ -59,16 +63,36 @@ the same seed, the foundation works.
 Prevox currently implements immutable core types and one completely manual
 eight-bar D Dorian trace. The first deterministic middle-end transformations
 support reversing, repeating, augmenting, and diminishing Motifs. It
-deliberately contains no Composer, randomness, MIDI, or rendering yet.
+deliberately contains no Composer, randomness, MIDI import, or full rendering
+profile yet. A minimal MIDI file exporter exists for previewing the manual
+trace.
 
 ```bash
 poetry install
 poetry run python -m unittest discover -s tests -v
 poetry run python examples/manual_trace.py
+poetry run python examples/export_manual_trace_midi.py
+poetry run python examples/export_multi_voice_midi.py
+poetry run python examples/export_drum_preview_midi.py
+poetry run python examples/export_theory_cohesion_midi.py
+poetry run python examples/analyze_melody_hooks.py
 ```
 
 The tests include unit checks, golden output checks, and architectural tests
 that protect layering and long-lived invariants.
+
+## Current proving loops
+
+Prevox currently has two useful feedback loops:
+
+- **Middle-end analysis:** inspect density, motif reuse, tonal cohesion, and
+  melody-hook metrics without rendering or mutating Music IR.
+- **MIDI preview:** regenerate ignored `.mid` artifacts under `artifacts/midi/`
+  and import them into Logic or another DAW.
+
+Logic has successfully imported the recent preview artifacts as separate
+software instruments for lead, bass, and drums. That validates the standard MIDI
+backend path while keeping DAW-specific concepts out of Music IR.
 
 ## Status
 
@@ -76,9 +100,16 @@ Phase 0 is complete. Prevox is now in phase 0.5: the IR playground and
 deterministic middle-end. The immutable domain model, canonical manual trace,
 golden fixture, and first
 temporal Motif transformations are implemented. Music IR is versioned, and
-transform preflight checks can report structured diagnostics. The first
-read-only analyses measure density and motif reuse without judging or mutating
-the music. Pitch transformations await an explicit interval and tuning model.
-MIDI follows only after the Music IR survives these pressure tests. Logic
+transform preflight checks can report structured diagnostics. Read-only
+analyses measure density, motif reuse, first-pass Dorian tonal cohesion, and
+genre-neutral melody hook features without judging or mutating the music. Pitch
+transformations await an explicit interval and tuning model.
+The first MIDI export spike can write the manual trace to
+`artifacts/midi/manual_trace.mid` for DAW preview, and a renderer-local MIDI
+profile can export logical voices as separate preview tracks in
+`artifacts/midi/multi_voice.mid`. A temporary backend-local General MIDI drum
+preview can export `artifacts/midi/drum_preview.mid` without making drums part
+of Music IR yet. A theory-cohesion example can analyze and export lead, bass,
+and drums to `artifacts/midi/theory_cohesion.mid`. MIDI import, Logic
 integration, a GUI, plugin hosting, AI integration, and Strudel integration
 remain deferred.

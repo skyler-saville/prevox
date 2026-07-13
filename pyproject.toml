@@ -6,8 +6,9 @@ authors = [
     {name = "Skyler Saville",email = "skylersaville@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<4.0"
 dependencies = [
+    "mido (>=1.3,<2)"
 ]
 
 [tool.poetry]

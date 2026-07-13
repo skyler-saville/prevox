@@ -1,0 +1,25 @@
+MidiFile type=1
+Ticks per beat: 480
+Track 0
+  +0000 @00000 track_name name='Drum Preview Tempo'
+  +0000 @00000 set_tempo tempo=600000
+  +0000 @00000 end_of_track
+Track 1
+  +0000 @00000 track_name name='GM Drum Preview'
+  +0000 @00000 note_on note=36 velocity=96 channel=9
+  +0240 @00240 note_off note=36 velocity=0 channel=9
+  +0000 @00240 note_on note=42 velocity=96 channel=9
+  +0240 @00480 note_off note=42 velocity=0 channel=9
+  +0000 @00480 note_on note=38 velocity=96 channel=9
+  +0240 @00720 note_off note=38 velocity=0 channel=9
+  +0000 @00720 note_on note=42 velocity=96 channel=9
+  +0240 @00960 note_off note=42 velocity=0 channel=9
+  +0000 @00960 note_on note=36 velocity=96 channel=9
+  +0240 @01200 note_off note=36 velocity=0 channel=9
+  +0000 @01200 note_on note=42 velocity=96 channel=9
+  +0240 @01440 note_off note=42 velocity=0 channel=9
+  +0000 @01440 note_on note=38 velocity=96 channel=9
+  +0240 @01680 note_off note=38 velocity=0 channel=9
+  +0000 @01680 note_on note=46 velocity=96 channel=9
+  +0240 @01920 note_off note=46 velocity=0 channel=9
+  +0000 @01920 end_of_track

@@ -1,11 +1,12 @@
 # LLM Context
 
-> Last updated: 2026-07-08
+> Last updated: 2026-07-12
 >
 > Project phase: 0 complete; 0.5 — IR playground active
 >
 > Implementation status: core types, canonical trace, temporal transforms,
-> diagnostics, analyses, and architecture guardrails are executable
+> diagnostics, analyses, architecture guardrails, and minimal MIDI export are
+> executable
 
 ## Purpose
 
@@ -95,26 +96,57 @@ As of 2026-07-08:
 | Composer/Critic/Arbiter behavior | Not implemented |
 | Motif transformations | Reverse, repeat, scale, augment, diminish |
 | Diagnostics | Immutable diagnostic values and transform preflight reports |
-| Analyses | Density and motif-reuse reports over Music IR |
+| Analyses | Density, motif-reuse, tonal-cohesion, and melody-hook reports over Music IR |
 | Canonical inspection | Aggregate formatters and manual golden trace |
 | Architectural tests | Import layering, immutability, and Music IR field guards |
 | Contribution guide | Engineering guardrails documented |
-| Rendering and MIDI | Designed only |
-| Production Python code | Domain types, inspection, and manual example |
+| Rendering and MIDI | Minimal MIDI file export implemented; multi-voice preview profiles, GM drum preview, and theory-cohesion preview implemented; import deferred |
+| Production Python code | Domain types, inspection, manual example, and MIDI export |
 | Automated tests | Standard-library unit, golden, and architectural tests |
-| Executable examples | Manual eight-bar D Dorian trace; examples cookbook direction documented |
+| Executable examples | Manual trace plus MIDI export preview; examples cookbook direction documented |
 | Golden fixtures | Canonical manual trace |
-| ADRs | Seven accepted records under `docs/adr/` |
+| ADRs | Ten accepted records under `docs/adr/` |
 | Git repository | Initialized with `origin` set to `skyler-saville/prevox` |
 
-The Python project uses Poetry, targets Python 3.12 or newer, and has no runtime
-or test-library dependencies. Tests use `unittest`. Run:
+The Python project uses Poetry, targets Python 3.12 to 3.x before 4.0, and
+uses `mido` for Standard MIDI File export. Tests use `unittest`. Run:
 
 ```bash
 poetry install
 poetry run python -m unittest discover -s tests -v
 poetry run python examples/manual_trace.py
+poetry run python examples/export_manual_trace_midi.py
+poetry run python examples/export_multi_voice_midi.py
+poetry run python examples/export_drum_preview_midi.py
+poetry run python examples/export_theory_cohesion_midi.py
+poetry run python examples/analyze_melody_hooks.py
 ```
+
+Generated `.mid` files are ignored by default. Manual preview output should go
+under `artifacts/`, for example `artifacts/midi/manual_trace.mid` or
+`artifacts/midi/multi_voice.mid`. Drum preview output goes to
+`artifacts/midi/drum_preview.mid`. Theory-cohesion preview output goes to
+`artifacts/midi/theory_cohesion.mid`. Do not commit binary MIDI files unless
+they are intentionally placed under an allowed fixture or example path.
+
+## Recent checkpoint: MIDI, theory, and melody
+
+Commits `efada3f` through `11a5ed6` established the first DAW-shaped vertical
+slice and the first theory-informed read-only analyses.
+
+- MIDI export uses `mido` and writes Standard MIDI Files.
+- MIDI render profiles map logical voices to tracks, channels, preview
+  velocities, and General MIDI programs below Music IR.
+- GM drum preview is backend-local on MIDI channel 10; first-class percussion
+  IR remains deferred.
+- Logic successfully imported the generated artifacts as separate software
+  instruments for lead, bass, and drums.
+- Tonal cohesion analysis measures scale membership and simple lead/bass
+  interval stability.
+- Melody hook analysis measures genre-neutral lead-line repetition, range,
+  motion, leaps, and contour changes.
+- The relevant guides are `docs/midi-preview-workflow.md` and
+  `docs/analysis-passes.md`.
 
 ## Git workflow for future LLM sessions
 
@@ -240,6 +272,13 @@ belong in Music IR.
 Whether the performance projection should become a formal, reusable
 non-canonical Performance IR remains open.
 
+### MIDI export is a backend boundary
+
+The first MIDI renderer writes Standard MIDI Files from `MusicIR.iter_notes()`.
+It owns ticks-per-beat, preview velocity, channel, and a temporary 12-TET
+pitch-to-MIDI-number mapping. That mapping is backend-local and must not be
+treated as the core pitch or interval semantics.
+
 ### Music IR changes are stability-sensitive
 
 Music IR is intended to be the project's most stable abstraction. During
@@ -280,8 +319,9 @@ invariant violations.
 
 Analysis passes read Music IR and return `AnalysisReport` values containing
 named metrics plus optional diagnostics. They do not mutate Music IR and do not
-judge whether the result satisfies an intent. The first analyses measure note
-density and motif reuse; future Critics may consume these reports.
+judge whether the result satisfies an intent. Current analyses measure note
+density, motif reuse, Dorian-oriented tonal cohesion, and genre-neutral melody
+hook features; future Critics may consume these reports.
 
 ## Open decisions and active hypotheses
 
@@ -402,7 +442,9 @@ temporal Motif transformations, canonical aggregate formatters, and one golden
 trace are tested.
 
 The next middle-end decision is the minimum pitch/interval model required for
-transpose and inversion. It must be tested against at least:
+transpose, inversion, and explicit repair. The first chromatic scale-membership
+and vertical-interval analysis exists, but transformation semantics still need
+to be tested against at least:
 
 ```text
 D Dorian diatonic material
@@ -462,7 +504,7 @@ projections as well.
 
 ## Architecture Decision Records
 
-Seven accepted ADRs now record the decisions exercised by code:
+Ten accepted ADRs now record the decisions exercised by code:
 
 ```text
 docs/adr/
@@ -472,7 +514,10 @@ docs/adr/
 ├── 0004-immutable-composition-state.md
 ├── 0005-temporal-motif-transformations.md
 ├── 0006-diagnostics-as-values.md
-└── 0007-add-read-only-analysis-passes.md
+├── 0007-add-read-only-analysis-passes.md
+├── 0008-midi-render-profiles.md
+├── 0009-backend-local-drum-preview.md
+└── 0010-theory-and-melody-analyses.md
 ```
 
 Performance IR remains open and has no ADR. If one is created before supporting

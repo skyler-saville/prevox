@@ -84,11 +84,12 @@ their weaknesses.
 Intent → Proposal → Critique → Acceptance → Music IR trace are implemented.
 Canonical aggregate formatting, a golden trace, and the first temporal Motif
 transformations are also implemented. Music IR is versioned, and transform
-preflight checks can now return compiler-style diagnostic reports. The first
-read-only analyses measure density and motif reuse. Architectural tests now
-protect import layering, immutable core values, and Music IR field boundaries.
-Pitch transformations remain deferred until interval and tuning semantics are
-explicit.
+preflight checks can now return compiler-style diagnostic reports. Read-only
+analyses measure density, motif reuse, first-pass tonal cohesion, and
+genre-neutral melody hook features.
+Architectural tests now protect import layering, immutable core values, and
+Music IR field boundaries. Pitch transformations remain deferred until interval
+and tuning semantics are explicit.
 
 - build a minimal console or notebook inspector;
 - hand-construct an eight-bar Intent IR plan in D Dorian;
@@ -177,8 +178,39 @@ frameworks, and abstract plugin machinery.
 
 ### 2A: Export
 
+**Initial spike (2026-07-11):** a minimal deterministic MIDI file exporter can
+write the manual Music IR trace to `artifacts/midi/manual_trace.mid`. It uses a
+backend-local 12-TET preview pitch mapping, fixed ticks-per-beat, default
+velocity, and one channel. Rendering profiles, instrument assignment, and Logic
+template mapping remain deferred.
+
+**Multi-voice preview spike (2026-07-12):** MIDI rendering profiles can map
+logical voices to renderer-local track names, channels, velocities, and General
+MIDI program changes. The example `examples/export_multi_voice_midi.py` writes
+`artifacts/midi/multi_voice.mid` while preserving the rule that Music IR knows
+voices, not instruments.
+
+**GM drum preview spike (2026-07-12):** a renderer-local drum assignment can map
+a temporary symbolic rhythm voice to General MIDI drum notes on MIDI channel 9.
+The example `examples/export_drum_preview_midi.py` writes
+`artifacts/midi/drum_preview.mid`. This deliberately does not settle the future
+domain model for percussion events.
+
+**Dorian cohesion preview spike (2026-07-12):** a read-only tonal cohesion
+analysis validates Dorian scale membership, ignores temporary drum-preview
+voices, and measures simple lead/bass vertical interval stability before
+exporting `artifacts/midi/theory_cohesion.mid`.
+
+**Melody hook analysis spike (2026-07-12):** a genre-neutral read-only analysis
+measures lead-line repetition, range, stepwise motion, large leaps, and contour
+direction changes. It does not define genre profiles or generate melodies yet.
+
+**Documentation checkpoint (2026-07-12):** ADRs and focused guides now document
+MIDI render profiles, backend-local GM drum preview, theory/melody analyses,
+the MIDI preview workflow, and analysis-pass metrics.
+
 - map beat positions and durations to MIDI ticks;
-- map logical voices through an explicit RenderingProfile;
+- map logical voices through an explicit rendering profile;
 - export tempo, meter, tracks, note-on, and note-off events;
 - define deterministic ordering for simultaneous events;
 - open the exported file in Logic Pro or another DAW and listen.
