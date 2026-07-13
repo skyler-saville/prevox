@@ -7,11 +7,11 @@ channel, and ticks-per-beat choices. Those concepts must not leak into Music IR.
 from dataclasses import dataclass
 from fractions import Fraction
 from pathlib import Path
-from typing import BinaryIO
+from typing import BinaryIO, Iterable, Mapping
 
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
 
-from prevox.domain import MusicIR, Pitch
+from prevox.domain import MusicIR, Pitch, RealizedNote
 
 _PITCH_CLASS_TO_SEMITONE = {
     "C": 0,
@@ -48,6 +48,90 @@ def _ticks(value: Fraction, *, ticks_per_beat: int, field: str) -> int:
     return raw_ticks.numerator
 
 
+def _validate_channel(channel: int) -> None:
+    if (
+        isinstance(channel, bool)
+        or not isinstance(channel, int)
+        or not 0 <= channel <= 15
+    ):
+        raise ValueError("channel must be between 0 and 15")
+
+
+def _validate_velocity(velocity: int) -> None:
+    if (
+        isinstance(velocity, bool)
+        or not isinstance(velocity, int)
+        or not 1 <= velocity <= 127
+    ):
+        raise ValueError("velocity must be between 1 and 127")
+
+
+def _validate_program(program: int) -> None:
+    if (
+        isinstance(program, bool)
+        or not isinstance(program, int)
+        or not 0 <= program <= 127
+    ):
+        raise ValueError("program must be between 0 and 127")
+
+
+@dataclass(frozen=True, slots=True)
+class MidiVoiceAssignment:
+    """Renderer-local MIDI preview choices for one logical voice."""
+
+    channel: int
+    program: int | None = None
+    velocity: int | None = None
+    track_name: str | None = None
+
+    def __post_init__(self) -> None:
+        _validate_channel(self.channel)
+        if self.program is not None:
+            _validate_program(self.program)
+        if self.velocity is not None:
+            _validate_velocity(self.velocity)
+        if self.track_name is not None and not self.track_name.strip():
+            raise ValueError("track_name must be non-empty when provided")
+
+
+@dataclass(frozen=True, slots=True)
+class MidiRenderProfile:
+    """Backend-only mapping from logical voices to MIDI preview assignments."""
+
+    voice_assignments: tuple[tuple[str, MidiVoiceAssignment], ...]
+
+    def __init__(
+        self,
+        voice_assignments: Mapping[str, MidiVoiceAssignment]
+        | Iterable[tuple[str, MidiVoiceAssignment]],
+    ) -> None:
+        normalized = tuple(voice_assignments.items()) if isinstance(
+            voice_assignments,
+            Mapping,
+        ) else tuple(voice_assignments)
+        if not normalized:
+            raise ValueError("voice_assignments must not be empty")
+
+        seen: set[str] = set()
+        for voice_id, assignment in normalized:
+            if not isinstance(voice_id, str) or not voice_id.strip():
+                raise ValueError("voice assignment keys must be non-empty voice ids")
+            if voice_id in seen:
+                raise ValueError(f"duplicate voice assignment for {voice_id!r}")
+            if not isinstance(assignment, MidiVoiceAssignment):
+                raise TypeError("voice assignment values must be MidiVoiceAssignment")
+            seen.add(voice_id)
+
+        object.__setattr__(self, "voice_assignments", normalized)
+
+    def assignment_for(self, voice_id: str) -> MidiVoiceAssignment | None:
+        """Return the explicit assignment for a logical voice, if present."""
+        for assigned_voice_id, assignment in self.voice_assignments:
+            if assigned_voice_id == voice_id:
+                return assignment
+        return None
+
+
 @dataclass(frozen=True, slots=True)
 class MidiRenderer:
     """Write Music IR to a deterministic Standard MIDI File."""
@@ -55,6 +139,7 @@ class MidiRenderer:
     ticks_per_beat: int = 480
     preview_velocity: int = 64
     channel: int = 0
+    profile: MidiRenderProfile | None = None
 
     def __post_init__(self) -> None:
         if (
@@ -63,24 +148,35 @@ class MidiRenderer:
             or self.ticks_per_beat <= 0
         ):
             raise ValueError("ticks_per_beat must be a positive integer")
-        if (
-            isinstance(self.preview_velocity, bool)
-            or not isinstance(self.preview_velocity, int)
-            or not 1 <= self.preview_velocity <= 127
-        ):
-            raise ValueError("preview_velocity must be between 1 and 127")
-        if (
-            isinstance(self.channel, bool)
-            or not isinstance(self.channel, int)
-            or not 0 <= self.channel <= 15
-        ):
-            raise ValueError("channel must be between 0 and 15")
+        try:
+            _validate_velocity(self.preview_velocity)
+        except ValueError as error:
+            raise ValueError("preview_velocity must be between 1 and 127") from error
+        try:
+            _validate_channel(self.channel)
+        except ValueError as error:
+            raise ValueError("channel must be between 0 and 15") from error
+        if self.profile is not None and not isinstance(self.profile, MidiRenderProfile):
+            raise TypeError("profile must be a MidiRenderProfile")
 
     def to_midi_file(self, music: MusicIR) -> MidiFile:
         """Return an in-memory Standard MIDI File for one Music IR value."""
         if not isinstance(music, MusicIR):
             raise TypeError("music must be a MusicIR")
+        if self.profile is not None:
+            return self._to_profiled_midi_file(music)
+        return self._to_single_track_midi_file(music)
 
+    def write(self, music: MusicIR, path: str | Path | BinaryIO) -> None:
+        """Write Music IR to a Standard MIDI File path or binary file."""
+        if isinstance(path, (str, Path)):
+            target = Path(path)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            self.to_midi_file(music).save(target)
+            return
+        self.to_midi_file(music).save(file=path)
+
+    def _to_single_track_midi_file(self, music: MusicIR) -> MidiFile:
         midi = MidiFile(ticks_per_beat=self.ticks_per_beat, type=1)
         track = MidiTrack()
         midi.tracks.append(track)
@@ -93,26 +189,109 @@ class MidiRenderer:
             )
         )
 
-        last_tick = 0
-        for tick, message in self._messages(music):
-            message.time = tick - last_tick
-            track.append(message)
-            last_tick = tick
+        self._append_messages(
+            track,
+            self._messages(
+                music.iter_notes(),
+                channel=self.channel,
+                velocity=self.preview_velocity,
+            ),
+        )
         track.append(MetaMessage("end_of_track", time=0))
         return midi
 
-    def write(self, music: MusicIR, path: str | Path | BinaryIO) -> None:
-        """Write Music IR to a Standard MIDI File path or binary file."""
-        if isinstance(path, (str, Path)):
-            target = Path(path)
-            target.parent.mkdir(parents=True, exist_ok=True)
-            self.to_midi_file(music).save(target)
-            return
-        self.to_midi_file(music).save(file=path)
+    def _to_profiled_midi_file(self, music: MusicIR) -> MidiFile:
+        if self.profile is None:
+            raise AssertionError("profiled MIDI export requires a profile")
 
-    def _messages(self, music: MusicIR) -> tuple[tuple[int, Message], ...]:
-        events: list[tuple[int, int, int, Message]] = []
+        midi = MidiFile(ticks_per_beat=self.ticks_per_beat, type=1)
+        conductor_track = MidiTrack()
+        midi.tracks.append(conductor_track)
+        conductor_track.append(
+            MetaMessage("track_name", name=f"{music.song.title} Tempo", time=0)
+        )
+        conductor_track.append(
+            MetaMessage(
+                "set_tempo",
+                tempo=bpm2tempo(music.song.tempo_bpm),
+                time=0,
+            )
+        )
+        conductor_track.append(MetaMessage("end_of_track", time=0))
+
+        grouped_notes = self._notes_by_voice(music)
+        for voice_id, notes in grouped_notes:
+            assignment = self.profile.assignment_for(voice_id)
+            if assignment is None:
+                assignment = MidiVoiceAssignment(
+                    channel=self.channel,
+                    velocity=self.preview_velocity,
+                    track_name=voice_id,
+                )
+            velocity = (
+                assignment.velocity
+                if assignment.velocity is not None
+                else self.preview_velocity
+            )
+            track = MidiTrack()
+            midi.tracks.append(track)
+            track.append(
+                MetaMessage(
+                    "track_name",
+                    name=assignment.track_name or voice_id,
+                    time=0,
+                )
+            )
+            if assignment.program is not None:
+                track.append(
+                    Message(
+                        "program_change",
+                        program=assignment.program,
+                        channel=assignment.channel,
+                        time=0,
+                    )
+                )
+            self._append_messages(
+                track,
+                self._messages(
+                    notes,
+                    channel=assignment.channel,
+                    velocity=velocity,
+                ),
+            )
+            track.append(MetaMessage("end_of_track", time=0))
+
+        return midi
+
+    def _notes_by_voice(
+        self,
+        music: MusicIR,
+    ) -> tuple[tuple[str, tuple[RealizedNote, ...]], ...]:
+        grouped: dict[str, list[RealizedNote]] = {}
         for note in music.iter_notes():
+            grouped.setdefault(note.voice_id, []).append(note)
+        return tuple((voice_id, tuple(notes)) for voice_id, notes in grouped.items())
+
+    def _append_messages(
+        self,
+        track: MidiTrack,
+        messages: tuple[tuple[int, Message], ...],
+    ) -> None:
+        last_tick = 0
+        for tick, message in messages:
+            message.time = tick - last_tick
+            track.append(message)
+            last_tick = tick
+
+    def _messages(
+        self,
+        notes: Iterable[RealizedNote],
+        *,
+        channel: int,
+        velocity: int,
+    ) -> tuple[tuple[int, Message], ...]:
+        events: list[tuple[int, int, int, Message]] = []
+        for note in notes:
             note_number = midi_note_number(note.pitch)
             start = _ticks(
                 note.offset,
@@ -133,8 +312,8 @@ class MidiRenderer:
                         Message(
                             "note_on",
                             note=note_number,
-                            velocity=self.preview_velocity,
-                            channel=self.channel,
+                            velocity=velocity,
+                            channel=channel,
                         ),
                     ),
                     (
@@ -145,7 +324,7 @@ class MidiRenderer:
                             "note_off",
                             note=note_number,
                             velocity=0,
-                            channel=self.channel,
+                            channel=channel,
                         ),
                     ),
                 )

@@ -20,7 +20,12 @@ from prevox.domain import (
     Voice,
     VoiceRole,
 )
-from prevox.export.midi import MidiRenderer, midi_note_number
+from prevox.export.midi import (
+    MidiRenderer,
+    MidiRenderProfile,
+    MidiVoiceAssignment,
+    midi_note_number,
+)
 from prevox.manual_example import build_manual_trace
 
 
@@ -62,6 +67,11 @@ def midi_projection(path: Path) -> str:
                 lines.append(f"{prefix} track_name name={message.name!r}")
             elif message.type == "set_tempo":
                 lines.append(f"{prefix} set_tempo tempo={message.tempo}")
+            elif message.type == "program_change":
+                lines.append(
+                    f"{prefix} program_change program={message.program} "
+                    f"channel={message.channel}"
+                )
             elif message.type in {"note_on", "note_off"}:
                 lines.append(
                     f"{prefix} {message.type} note={message.note} "
@@ -96,6 +106,77 @@ def unrepresentable_music() -> MusicIR:
         sections=(Placement(section, 0),),
     )
     return MusicIR(song)
+
+
+def multi_voice_music() -> MusicIR:
+    lead_motif = Motif(
+        "lead-motif",
+        duration=4,
+        notes=(
+            Note(Pitch.parse("D4"), offset=0, duration=1),
+            Note(Pitch.parse("F4"), offset=1, duration=1),
+            Note(Pitch.parse("A4"), offset=2, duration=2),
+        ),
+    )
+    lead_phrase = Phrase(
+        "lead-phrase",
+        duration=8,
+        motifs=(Placement(lead_motif, 0), Placement(lead_motif, 4)),
+    )
+    lead = Voice(
+        "lead",
+        VoiceRole.LEAD,
+        phrases=(Placement(lead_phrase, 0),),
+    )
+
+    bass_motif = Motif(
+        "bass-motif",
+        duration=4,
+        notes=(
+            Note(Pitch.parse("D2"), offset=0, duration=2),
+            Note(Pitch.parse("A2"), offset=2, duration=2),
+        ),
+    )
+    bass_phrase = Phrase(
+        "bass-phrase",
+        duration=8,
+        motifs=(Placement(bass_motif, 0), Placement(bass_motif, 4)),
+    )
+    bass = Voice(
+        "bass",
+        VoiceRole.BASS,
+        phrases=(Placement(bass_phrase, 0),),
+    )
+
+    section = Section("verse", duration=8, voices=(lead, bass))
+    song = Song(
+        "two-voice-preview",
+        "Two Voice Preview",
+        duration=8,
+        tempo_bpm=96,
+        tonal_context=TonalContext(PitchClass.parse("D"), "Dorian"),
+        sections=(Placement(section, 0),),
+    )
+    return MusicIR(song)
+
+
+def multi_voice_profile() -> MidiRenderProfile:
+    return MidiRenderProfile(
+        {
+            "lead": MidiVoiceAssignment(
+                channel=0,
+                program=80,
+                velocity=72,
+                track_name="Lead Preview",
+            ),
+            "bass": MidiVoiceAssignment(
+                channel=1,
+                program=33,
+                velocity=84,
+                track_name="Bass Preview",
+            ),
+        }
+    )
 
 
 class MidiExportTests(unittest.TestCase):
@@ -232,6 +313,88 @@ class MidiExportTests(unittest.TestCase):
         midi = MidiFile(file=buffer)
         self.assertEqual(midi.ticks_per_beat, 480)
         self.assertEqual(len(midi.tracks), 1)
+
+    def test_profiled_export_creates_one_track_per_voice_plus_tempo(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "multi_voice.mid"
+
+            MidiRenderer(profile=multi_voice_profile()).write(multi_voice_music(), path)
+
+            midi = MidiFile(path)
+            self.assertEqual(len(midi.tracks), 3)
+            track_names = [
+                message.name
+                for track in midi.tracks
+                for message in track
+                if message.type == "track_name"
+            ]
+            self.assertEqual(
+                track_names,
+                [
+                    "Two Voice Preview Tempo",
+                    "Lead Preview",
+                    "Bass Preview",
+                ],
+            )
+
+    def test_profiled_export_uses_voice_assignments(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "multi_voice.mid"
+
+            MidiRenderer(profile=multi_voice_profile()).write(multi_voice_music(), path)
+
+            midi = MidiFile(path)
+            lead_messages = tuple(
+                message
+                for message in midi.tracks[1]
+                if message.type in {"program_change", "note_on"}
+            )
+            bass_messages = tuple(
+                message
+                for message in midi.tracks[2]
+                if message.type in {"program_change", "note_on"}
+            )
+            self.assertEqual(lead_messages[0].program, 80)
+            self.assertEqual(lead_messages[0].channel, 0)
+            self.assertEqual(
+                {
+                    message.velocity
+                    for message in lead_messages
+                    if message.type == "note_on"
+                },
+                {72},
+            )
+            self.assertEqual(bass_messages[0].program, 33)
+            self.assertEqual(bass_messages[0].channel, 1)
+            self.assertEqual(
+                {
+                    message.velocity
+                    for message in bass_messages
+                    if message.type == "note_on"
+                },
+                {84},
+            )
+
+    def test_profiled_export_midi_projection_matches_golden_file(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "multi_voice.mid"
+
+            MidiRenderer(profile=multi_voice_profile()).write(multi_voice_music(), path)
+
+            golden = (GOLDEN_DIR / "multi_voice_midi.txt").read_text()
+            self.assertEqual(midi_projection(path), golden)
+
+    def test_profile_validation_rejects_invalid_voice_assignments(self) -> None:
+        with self.assertRaisesRegex(ValueError, "channel"):
+            MidiVoiceAssignment(channel=16)
+        with self.assertRaisesRegex(ValueError, "program"):
+            MidiVoiceAssignment(channel=0, program=128)
+        with self.assertRaisesRegex(ValueError, "velocity"):
+            MidiVoiceAssignment(channel=0, velocity=0)
+        with self.assertRaisesRegex(ValueError, "track_name"):
+            MidiVoiceAssignment(channel=0, track_name=" ")
+        with self.assertRaisesRegex(ValueError, "voice_assignments"):
+            MidiRenderProfile({})
 
 
 if __name__ == "__main__":

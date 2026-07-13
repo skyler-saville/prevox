@@ -8,6 +8,9 @@ The current example is:
 - `manual_trace.py` — a hand-constructed eight-bar D Dorian pipeline trace.
 - `export_manual_trace_midi.py` — writes that trace to
   `artifacts/midi/manual_trace.mid` for local DAW preview.
+- `export_multi_voice_midi.py` — writes a tiny lead-and-bass preview to
+  `artifacts/midi/multi_voice.mid`, using renderer-local voice assignments for
+  tracks, channels, velocity, and General MIDI programs.
 
 Future examples should grow toward a cookbook of musical ideas:
 

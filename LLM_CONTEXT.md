@@ -100,7 +100,7 @@ As of 2026-07-08:
 | Canonical inspection | Aggregate formatters and manual golden trace |
 | Architectural tests | Import layering, immutability, and Music IR field guards |
 | Contribution guide | Engineering guardrails documented |
-| Rendering and MIDI | Minimal MIDI file export implemented; import and profiles deferred |
+| Rendering and MIDI | Minimal MIDI file export implemented; multi-voice preview profiles implemented; import deferred |
 | Production Python code | Domain types, inspection, manual example, and MIDI export |
 | Automated tests | Standard-library unit, golden, and architectural tests |
 | Executable examples | Manual trace plus MIDI export preview; examples cookbook direction documented |
@@ -116,12 +116,13 @@ poetry install
 poetry run python -m unittest discover -s tests -v
 poetry run python examples/manual_trace.py
 poetry run python examples/export_manual_trace_midi.py
+poetry run python examples/export_multi_voice_midi.py
 ```
 
 Generated `.mid` files are ignored by default. Manual preview output should go
-under `artifacts/`, for example `artifacts/midi/manual_trace.mid`. Do not commit
-binary MIDI files unless they are intentionally placed under an allowed fixture
-or example path.
+under `artifacts/`, for example `artifacts/midi/manual_trace.mid` or
+`artifacts/midi/multi_voice.mid`. Do not commit binary MIDI files unless they
+are intentionally placed under an allowed fixture or example path.
 
 ## Git workflow for future LLM sessions
 
