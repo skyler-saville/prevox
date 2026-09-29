@@ -12,6 +12,17 @@ For research questions that influence architecture, see
 [../../REFERENCES.md](../../REFERENCES.md). When a technology choice becomes an
 architectural commitment, record it in [../adr/](../adr/).
 
+## Ownership labels
+
+Use an ownership label so internal projects and external tools can coexist in
+the same catalog without implying the same relationship:
+
+- **Frayed Banner project**
+- **External open source**
+- **External commercial / freeware**
+- **Standard / specification**
+- **Research / paper**
+
 ## Relationship labels
 
 Use one or more of these labels for every project:
@@ -32,6 +43,23 @@ Use one or more of these labels for every project:
 | Audio transcription and separation | [audio-transcription.md](audio-transcription.md) | Basic Pitch, NeuralNote, Demucs, Spleeter |
 | Audio processing and infrastructure | [audio-processing.md](audio-processing.md) | FFmpeg, Pedalboard, Rubber Band, libsndfile |
 | MIDI and symbolic music | [midi-symbolic-music.md](midi-symbolic-music.md) | Mido, pretty_midi, music21, FluidSynth |
+
+## Internal project map
+
+Internal projects get dedicated positioning pages so their boundaries can be
+compared against external systems using the same research method.
+
+| Project | Definition | Comparison page |
+| --- | --- | --- |
+| Prevox | Procedural composition engine separating musical intent from realized symbolic music | [projects/prevox.md](projects/prevox.md) |
+| Audo_EQ | Programmable, reference-driven mastering engine with explicit analysis, decisioning, DSP, and diagnostics | [projects/audo-eq.md](projects/audo-eq.md) |
+
+See [comparison-framework.md](comparison-framework.md) for the standard questions
+used when comparing internal and external projects.
+
+This `docs/ecosystem/` tree is a temporary home. Its structure is deliberately
+portable so it can move into a dedicated Frayed Banner music-technology
+knowledge repository later without changing the project boundaries it documents.
 
 ## Cross-cutting terms
 
@@ -69,7 +97,12 @@ Before promoting a project from research into a Prevox experiment, record:
 7. **Determinism** — can outputs be reproduced and tested?
 8. **Isolation** — can it sit behind a port/adapter rather than leak into the domain?
 9. **Failure modes** — what material does it handle poorly?
-10. **Prevox relationship** — dependency, candidate integration, reference, or no adoption.
+10. **Project relationship** — dependency, candidate integration, reference, or no adoption.
+11. **Closest comparisons** — which existing projects solve the nearest problem?
+12. **Boundary difference** — where does this project deliberately stop?
+13. **Best-fit workflow** — when is this project the stronger choice?
+14. **Architectural consequence** — does the comparison change a port, ADR,
+    roadmap item, or domain boundary?
 
 ## Architectural rule
 
