@@ -15,6 +15,7 @@ This layer should remain distinct from Prevox's musical domain model.
 
 ## FFmpeg
 
+**Official:** [ffmpeg.org](https://ffmpeg.org/)  
 **Relationship:** Candidate dependency / production workflow tool  
 **Interface:** CLI + C libraries  
 **Typical data:** media files/streams → decoded, transformed, inspected, encoded output
@@ -44,6 +45,7 @@ Overlaps with [libsndfile/SoundFile](#libsndfile-and-soundfile), SoX, and some
 
 ## libsndfile and SoundFile
 
+**Official:** [libsndfile](https://libsndfile.github.io/libsndfile/) · [python-soundfile](https://python-soundfile.readthedocs.io/)  
 **Relationship:** Candidate integration  
 **Interface:** C library + Python wrapper  
 **Typical data:** common PCM audio files ↔ arrays
@@ -71,6 +73,7 @@ Choose this over FFmpeg when straightforward sampled-audio I/O is enough.
 
 ## Pedalboard
 
+**Official:** [Documentation](https://spotify.github.io/pedalboard/) · [GitHub](https://github.com/spotify/pedalboard)  
 **Relationship:** Candidate integration / reference implementation  
 **Interface:** Python/C++  
 **Typical data:** audio arrays/files + plugin chains → processed audio
@@ -101,6 +104,7 @@ Do not expose plugin instances inside Music IR.
 
 ## Rubber Band
 
+**Official:** [breakfastquay.com/rubberband](https://breakfastquay.com/rubberband/)  
 **Relationship:** Candidate integration / production workflow tool  
 **Interface:** CLI / C++ library  
 **Typical data:** audio → time-stretched and/or pitch-shifted audio
@@ -125,6 +129,7 @@ This is audio transformation, distinct from symbolic transposition in
 
 ## SoX
 
+**Official:** [SourceForge project](https://sourceforge.net/projects/sox/)  
 **Relationship:** Production workflow tool / reference implementation  
 **Interface:** CLI
 
@@ -138,15 +143,16 @@ program control rather than relying on a DAW session.
 
 Relevant standards/projects include:
 
-- **AU** — Apple's Audio Unit format;
-- **VST3** — Steinberg plugin standard;
-- **LV2** — open plugin standard;
-- **CLAP** — open plugin API;
-- **Vamp** — analysis plugins; see
+- **[AU](https://developer.apple.com/documentation/audiotoolbox/audio_unit_v3_plug-ins)** — Apple's Audio Unit format;
+- **[VST3](https://steinbergmedia.github.io/vst3_dev_portal/)** — Steinberg plugin standard;
+- **[LV2](https://lv2plug.in/)** — open plugin standard;
+- **[CLAP](https://cleveraudio.org/)** — open plugin API;
+- **[Vamp](https://vamp-plugins.org/)** — analysis plugins; see
   [audio analysis](audio-analysis.md#vamp-and-sonic-visualiser).
 
 ### Carla
 
+**Official:** [kx.studio/Applications:Carla](https://kx.studio/Applications:Carla)  
 **Relationship:** Reference implementation / production workflow tool
 
 Carla is a broad plugin host and patchbay useful for studying plugin discovery,
@@ -160,10 +166,10 @@ For Python-controlled AU/VST3 rendering, see [Pedalboard](#pedalboard).
 
 Projects worth tracking:
 
-- **RNNoise** — neural noise suppression;
-- **DeepFilterNet** — speech-oriented deep filtering;
-- **SpeexDSP** — preprocessing, echo cancellation, resampling;
-- **zita-convolver** — convolution engine.
+- **[RNNoise](https://github.com/xiph/rnnoise)** — neural noise suppression;
+- **[DeepFilterNet](https://github.com/Rikorose/DeepFilterNet)** — speech-oriented deep filtering;
+- **[SpeexDSP](https://www.speex.org/)** — preprocessing, echo cancellation, resampling;
+- **[zita-convolver](https://kokkinizita.linuxaudio.org/linuxaudio/)** — convolution engine.
 
 These are useful for cleanup but should be evaluated against music-specific
 failure modes. A speech denoiser can damage sustained tones, ambience, cymbals,
