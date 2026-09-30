@@ -17,6 +17,7 @@ For note-event extraction specifically, see
 
 ## librosa
 
+**Official:** [librosa.org](https://librosa.org/)  
 **Relationship:** Candidate integration / reference implementation  
 **Interface:** Python  
 **Typical data:** audio files or NumPy arrays → features/annotations
@@ -39,6 +40,7 @@ Overlaps with: [Essentia](#essentia), [aubio](#aubio), and preprocessing in
 
 ## Essentia
 
+**Official:** [essentia.upf.edu](https://essentia.upf.edu/)  
 **Relationship:** Candidate integration / reference implementation  
 **Interface:** C++ / Python  
 **Typical data:** audio → low-, mid-, and higher-level descriptors
@@ -54,6 +56,7 @@ embedding it.
 
 ## aubio
 
+**Official:** [aubio.org](https://aubio.org/)  
 **Relationship:** Candidate integration / reference implementation  
 **Interface:** C / Python / CLI  
 **Typical data:** audio → pitch, onset, beat, tempo estimates
@@ -70,6 +73,7 @@ Overlaps with:
 
 ## Vamp and Sonic Visualiser
 
+**Official:** [Vamp Plugins](https://vamp-plugins.org/) · [Sonic Visualiser](https://sonicvisualiser.org/)  
 **Relationship:** Reference implementation / production workflow tool  
 **Interface:** analysis-plugin standard + desktop application
 
@@ -89,9 +93,9 @@ extract features.
 
 Several libraries sit between analysis and processing:
 
-- **libebur128** — EBU R128 / ITU BS.1770 measurement primitives.
-- **pyloudnorm** — Python loudness measurement and normalization workflows.
-- **FFmpeg loudnorm** — command-line analysis and normalization.
+- **[libebur128](https://github.com/jiixyj/libebur128)** — EBU R128 / ITU BS.1770 measurement primitives.
+- **[pyloudnorm](https://github.com/csteinmetz1/pyloudnorm)** — Python loudness measurement and normalization workflows.
+- **[FFmpeg loudnorm](https://ffmpeg.org/ffmpeg-filters.html#loudnorm)** — command-line analysis and normalization.
 
 See [FFmpeg](audio-processing.md#ffmpeg) for infrastructure context.
 

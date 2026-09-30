@@ -21,6 +21,7 @@ be silently promoted to Intent IR.
 
 ## Basic Pitch
 
+**Official:** [Basic Pitch](https://basicpitch.spotify.com/) · [GitHub](https://github.com/spotify/basic-pitch)  
 **Relationship:** Candidate integration / reference implementation  
 **Interface:** Python / CLI  
 **Typical data:** audio → MIDI/note events
@@ -54,6 +55,7 @@ The port should expose Prevox-owned DTOs rather than Basic Pitch model objects.
 
 ## NeuralNote
 
+**Official:** [GitHub](https://github.com/DamRsn/NeuralNote)  
 **Relationship:** Adjacent project / reference implementation / watchlist  
 **Interface:** desktop/plugin-oriented workflow, project-dependent internals
 
@@ -98,6 +100,7 @@ stems
 
 ## Demucs
 
+**Official:** [Maintainer fork](https://github.com/adefossez/demucs) · [Original Meta repository](https://github.com/facebookresearch/demucs)  
 **Relationship:** Candidate integration / reference implementation  
 **Interface:** Python / CLI  
 **Typical data:** mixed audio → estimated stems
@@ -110,6 +113,7 @@ Potential Prevox use: a `StemSeparationPort`, not a direct domain dependency.
 
 ## Spleeter
 
+**Official:** [GitHub](https://github.com/deezer/spleeter)  
 **Relationship:** Reference implementation / alternative candidate  
 **Interface:** Python / CLI  
 **Typical data:** mixed audio → 2/4/5-stem estimates
@@ -119,6 +123,7 @@ runtime, model size, and packaging complexity against Demucs-family systems.
 
 ## Open-Unmix
 
+**Official:** [GitHub](https://github.com/sigsep/open-unmix-pytorch)  
 **Relationship:** Research/reference implementation  
 **Interface:** Python / model tooling
 
@@ -146,7 +151,7 @@ provenance that the source was model-derived.
 
 ## Speech and vocal transcription
 
-Vocal workflows can also use speech-oriented systems such as Whisper-family
+Vocal workflows can also use speech-oriented systems such as [Whisper](https://github.com/openai/whisper)
 transcription for words/timestamps. That is a different task from musical AMT.
 
 Potential chain:

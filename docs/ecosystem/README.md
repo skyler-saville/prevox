@@ -84,24 +84,35 @@ These terms deliberately link multiple capability areas:
   [FluidSynth](midi-symbolic-music.md#fluidsynth), plugin hosting, and Prevox's
   own backend/rendering boundary in [../../ARCHITECTURE.md](../../ARCHITECTURE.md).
 
+## External-link rule
+
+Every named external package, project, product, standard, or research system should include an **Official page** link. Prefer, in order:
+
+1. the project's official website or documentation;
+2. the authoritative source repository when no maintained website exists;
+3. the standards body's canonical specification page for formats/standards.
+
+Use secondary articles only as supporting research, never as the canonical project link. If a project has both a website and a repository and both are materially useful, include both.
+
 ## Evaluation checklist
 
 Before promoting a project from research into a Prevox experiment, record:
 
-1. **Capability** — what problem does it solve?
-2. **Interface** — CLI, Python API, C/C++, plugin, service, or application?
-3. **Input/output contract** — audio, MIDI, MusicXML, arrays, model tensors, etc.
-4. **License** — especially important for GPL/AGPL or model-specific licenses.
-5. **Maintenance** — active, mature/stable, experimental, or abandoned?
-6. **Platform fit** — macOS and Apple Silicon status where relevant.
-7. **Determinism** — can outputs be reproduced and tested?
-8. **Isolation** — can it sit behind a port/adapter rather than leak into the domain?
-9. **Failure modes** — what material does it handle poorly?
-10. **Project relationship** — dependency, candidate integration, reference, or no adoption.
-11. **Closest comparisons** — which existing projects solve the nearest problem?
-12. **Boundary difference** — where does this project deliberately stop?
-13. **Best-fit workflow** — when is this project the stronger choice?
-14. **Architectural consequence** — does the comparison change a port, ADR,
+1. **Official page** — canonical website/docs/repository for follow-up research.
+2. **Capability** — what problem does it solve?
+3. **Interface** — CLI, Python API, C/C++, plugin, service, or application?
+4. **Input/output contract** — audio, MIDI, MusicXML, arrays, model tensors, etc.
+5. **License** — especially important for GPL/AGPL or model-specific licenses.
+6. **Maintenance** — active, mature/stable, experimental, or abandoned?
+7. **Platform fit** — macOS and Apple Silicon status where relevant.
+8. **Determinism** — can outputs be reproduced and tested?
+9. **Isolation** — can it sit behind a port/adapter rather than leak into the domain?
+10. **Failure modes** — what material does it handle poorly?
+11. **Project relationship** — dependency, candidate integration, reference, or no adoption.
+12. **Closest comparisons** — which existing projects solve the nearest problem?
+13. **Boundary difference** — where does this project deliberately stop?
+14. **Best-fit workflow** — when is this project the stronger choice?
+15. **Architectural consequence** — does the comparison change a port, ADR,
     roadmap item, or domain boundary?
 
 ## Architectural rule
