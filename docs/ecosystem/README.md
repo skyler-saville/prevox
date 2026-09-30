@@ -99,7 +99,7 @@ Use secondary articles only as supporting research, never as the canonical proje
 Before promoting a project from research into a Prevox experiment, record:
 
 1. **Official page** — canonical website/docs/repository for follow-up research.
-3. **Capability** — what problem does it solve?
+2. **Capability** — what problem does it solve?
 3. **Interface** — CLI, Python API, C/C++, plugin, service, or application?
 4. **Input/output contract** — audio, MIDI, MusicXML, arrays, model tensors, etc.
 5. **License** — especially important for GPL/AGPL or model-specific licenses.
