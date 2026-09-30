@@ -9,6 +9,11 @@ for Prevox, and—eventually—the result of an experiment or design decision.
 Prefer specifications, papers, source repositories, and project documentation
 over summaries. Record the date reviewed because software and standards change.
 
+For a capability-oriented inventory of external audio and music software, see
+[docs/ecosystem/](docs/ecosystem/). Keep this file focused on sources that change
+an architectural question, suggest an experiment, or motivate a design decision;
+do not duplicate the general software catalog here.
+
 ## Research questions
 
 - What information belongs in Intent IR, Music IR, or neither?

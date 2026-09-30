@@ -50,6 +50,8 @@ the same seed, the foundation works.
   read-only middle-end analyses and their metrics.
 - [docs/midi-preview-workflow.md](docs/midi-preview-workflow.md) documents
   generated MIDI artifacts and the Logic preview workflow.
+- [docs/ecosystem/](docs/ecosystem/) maps external audio, MIR, transcription,
+  DSP, MIDI, and symbolic-music software by capability and relationship to Prevox.
 - [REFERENCES.md](REFERENCES.md) is the project's annotated research notebook.
 - [CONTRIBUTING.md](CONTRIBUTING.md) defines the engineering guardrails for
   protecting the architecture.
