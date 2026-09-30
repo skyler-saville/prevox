@@ -22,6 +22,7 @@ See [MUSICAL_GRAMMAR.md](../../MUSICAL_GRAMMAR.md) and
 
 ### Mido
 
+**Official:** [mido.readthedocs.io](https://mido.readthedocs.io/)  
 **Relationship:** Candidate integration / production utility  
 **Interface:** Python  
 **Typical data:** MIDI messages/files/ports
@@ -37,6 +38,7 @@ Potential Prevox use:
 
 ### pretty_midi
 
+**Official:** [Documentation](https://craffel.github.io/pretty-midi/) · [GitHub](https://github.com/craffel/pretty-midi)  
 **Relationship:** Candidate integration / reference implementation  
 **Interface:** Python  
 **Typical data:** MIDI → higher-level note/instrument/timing objects
@@ -56,6 +58,7 @@ Neither library should define Prevox's domain model.
 
 ## music21
 
+**Official:** [music21.org](https://www.music21.org/)  
 **Relationship:** Reference implementation / candidate analysis integration  
 **Interface:** Python  
 **Typical data:** notes, chords, streams, scores, theory structures
@@ -80,6 +83,7 @@ Avoid importing music21 objects into long-lived domain types.
 
 ## MusPy
 
+**Official:** [muspy.readthedocs.io](https://muspy.readthedocs.io/)  
 **Relationship:** Reference implementation / research tool  
 **Interface:** Python
 
@@ -91,6 +95,7 @@ representation loses different information.
 
 ## FluidSynth
 
+**Official:** [fluidsynth.org](https://www.fluidsynth.org/)  
 **Relationship:** Candidate rendering utility / production workflow tool  
 **Interface:** library / CLI  
 **Typical data:** MIDI + SoundFont → audio
@@ -156,11 +161,11 @@ the original score or composer's intent.
 
 ## Formats to track
 
-- **Standard MIDI File (SMF)** — performance/event interchange.
-- **MIDI 2.0** — higher-resolution and per-note expression capabilities.
-- **MusicXML** — score/notation interchange.
-- **MEI** — richer scholarly/notation encoding.
-- **SF2/SF3/SFZ** — instrument/sample definitions relevant to rendering.
+- **[Standard MIDI File (SMF)](https://midi.org/standard-midi-files-smf)** — performance/event interchange.
+- **[MIDI 2.0](https://midi.org/midi-2-0)** — higher-resolution and per-note expression capabilities.
+- **[MusicXML](https://www.w3.org/2021/06/musicxml40/)** — score/notation interchange.
+- **[MEI](https://music-encoding.org/)** — richer scholarly/notation encoding.
+- **[SF2/SF3](https://github.com/FluidSynth/fluidsynth/wiki/SoundFont)** / **[SFZ](https://sfzformat.com/)** — instrument/sample definitions relevant to rendering.
 
 MIDI 2.0, MusicXML, and MEI have direct conceptual entries in
 [REFERENCES.md](../../REFERENCES.md).
