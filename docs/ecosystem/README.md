@@ -43,6 +43,7 @@ Use one or more of these labels for every project:
 | Audio transcription and separation | [audio-transcription.md](audio-transcription.md) | Basic Pitch, NeuralNote, Demucs, Spleeter |
 | Audio processing and infrastructure | [audio-processing.md](audio-processing.md) | FFmpeg, Pedalboard, Rubber Band, libsndfile |
 | MIDI and symbolic music | [midi-symbolic-music.md](midi-symbolic-music.md) | Mido, pretty_midi, music21, FluidSynth |
+| Creative audio transformation | [creative-audio-transformation.md](creative-audio-transformation.md) | Signalsmith Stretch, PaulXStretch, Faust, SuperCollider |
 
 ## Internal project map
 
@@ -75,8 +76,9 @@ These terms deliberately link multiple capability areas:
   transcription, replacement, or repair. See
   [audio transcription](audio-transcription.md#source-separation).
 - **DSP (digital signal processing)** — transforms or measures the waveform
-  itself. See [audio processing](audio-processing.md#digital-signal-processing-dsp)
-  and [audio analysis](audio-analysis.md).
+  itself. See [audio processing](audio-processing.md#digital-signal-processing-dsp),
+  [creative audio transformation](creative-audio-transformation.md), and
+  [audio analysis](audio-analysis.md).
 - **Plugin hosting** — executing AU/VST3/LV2/etc. outside a traditional DAW.
   See [Pedalboard](audio-processing.md#pedalboard) and
   [Carla](audio-processing.md#carla).

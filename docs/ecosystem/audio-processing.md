@@ -3,7 +3,8 @@
 [← Ecosystem index](README.md) · Related:
 [audio analysis](audio-analysis.md) ·
 [audio transcription](audio-transcription.md) ·
-[MIDI and symbolic music](midi-symbolic-music.md)
+[MIDI and symbolic music](midi-symbolic-music.md) ·
+[creative audio transformation](creative-audio-transformation.md)
 
 ## Digital signal processing (DSP)
 
@@ -12,6 +13,10 @@ include resampling, filtering, equalization, compression, convolution, time
 stretching, pitch shifting, denoising, format conversion, and plugin execution.
 
 This layer should remain distinct from Prevox's musical domain model.
+
+For deliberately destructive, textural, spectral, granular, or otherwise
+identity-changing processing, see
+[creative audio transformation](creative-audio-transformation.md).
 
 ## FFmpeg
 
